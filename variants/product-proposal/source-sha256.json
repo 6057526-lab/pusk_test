@@ -1,0 +1,11 @@
+{
+  "source": "variants/current-mobile",
+  "date": "2026-09-23",
+  "files": {
+    "index.html": "2ff0b1dc65888f373b6db8ed050863f4c119257be11774e0ca8e5d95cebf7a5d",
+    "css/recording.css": "6512e86c3945dde1f17bb2c6b7687116710463fe5b485d5e699a1a2b23d00699",
+    "css/styles.css": "694942ce245a069d4f9737a6a1a085c3bdf2e7e1cfd184b2bec0b21b26f3a912",
+    "js/app.js": "cc6ddb2c9218f898ae064be221dbcfa17d19b6f13f785a80217fa1cb8d6f5149",
+    "js/questions.js": "6bb267c36b6f7c808b2988579e648a0df7a26631a3b0bc5beabd629d6d754fe6"
+  }
+}

@@ -1,0 +1,21 @@
+# Local / tooling
+.playwright-cli/
+.tmp/
+tmp/
+output/
+*.log
+.DS_Store
+Thumbs.db
+.railway/
+.env
+.env.*
+
+# Heavy reference materials (not needed for clickable demo)
+*.mp4
+frames/
+hi/
+sample/
+scenes/
+v2/
+v3/
+docs/video-audit/

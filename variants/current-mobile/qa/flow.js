@@ -1,0 +1,57 @@
+async (page) => {
+  const failures=[];
+  page.on('pageerror',e=>failures.push(e.message));
+  const assert=(ok,message)=>{if(!ok)throw new Error(message);};
+  await page.locator('[data-screen="form-food"].active').waitFor();
+  const q10=page.locator('.audit-green[data-qid="10.FS"]');
+  await q10.getByRole('radio',{name:'Нет',exact:true}).check();
+  await q10.getByRole('checkbox').nth(0).check();
+  await q10.getByRole('checkbox').nth(2).check();
+  await q10.getByRole('textbox').fill('Проверка сохранения двух причин и комментария');
+  await page.getByRole('button',{name:'Сохранить',exact:true}).click();
+  await page.locator('[data-screen="tasks"].active').waitFor();
+  await page.locator('[data-task="form-food"]').click();
+  await page.locator('[data-screen="form-food"].active').waitFor();
+  assert(await q10.getByRole('radio',{name:'Нет',exact:true}).isChecked(),'Answer lost in draft');
+  assert(await q10.locator('input[type=checkbox]:checked').count()===2,'Multiple reasons lost');
+  assert((await q10.getByRole('textbox').inputValue()).includes('двух причин'),'Comment lost');
+  await page.getByRole('button',{name:'Завершить визит',exact:true}).click();
+  assert(await page.locator('#food-validation').isVisible(),'Missing answer validation absent');
+  assert(!(await page.locator('#finish-confirm').isVisible()),'Incomplete form can finish');
+  await page.screenshot({path:'output/playwright/current-validation.png'});
+  assert(await page.locator('.audit-green').count()===39,'Expected 39 noncritical questions');
+  const all=page.locator('.audit-green');
+  for(let i=0;i<await all.count();i++){
+    const block=all.nth(i);
+    if(await block.locator('input[type=radio]:checked').count()===0)await block.getByRole('radio',{name:'Да',exact:true}).check();
+  }
+  await page.locator('[data-action="food-cat-next"]').click();
+  assert(await page.locator('.audit-green').count()===9,'Expected 9 critical questions');
+  for(const radio of await page.locator('.audit-green').getByRole('radio',{name:'Да',exact:true}).all())await radio.check();
+  await page.locator('[data-action="food-cat-prev"]').click();
+  assert(await q10.locator('input[type=checkbox]:checked').count()===2,'Reasons lost across categories');
+  await page.locator('[data-action="food-cat-next"]').click();
+  await page.getByRole('button',{name:'Завершить визит',exact:true}).click();
+  await page.locator('#finish-confirm').waitFor({state:'visible'});
+  await page.screenshot({path:'output/playwright/current-finish.png'});
+  await page.locator('[data-action="cancel-finish"]').click();
+  assert(await page.locator('[data-screen="form-food"].active').isVisible(),'Cancel left questionnaire');
+  await page.getByRole('button',{name:'Завершить визит',exact:true}).click();
+  await page.locator('#finish-confirm').getByText('Да',{exact:true}).click();
+  await page.locator('[data-action="confirm-food"]').click();
+  await page.locator('[data-task="results-food"]').waitFor();
+  assert(await page.locator('[data-task="form-food"]').count()===0,'Completed audit still editable from task');
+  await page.locator('[data-task="results-food"]').click();
+  assert(await page.locator('[data-screen="results-food"] .report-sheet').count()===5,'Expected five report pages');
+  assert((await page.locator('[data-screen="results-food"] .report-sheet').first().innerText()).includes('двух причин'),'Report omitted submitted comments');
+  assert((await page.locator('[data-screen="results-food"] .report-sheet').first().innerText()).includes('Факт фальсификации'),'Report omitted confirmation');
+  await page.screenshot({path:'output/playwright/current-results.png'});
+  await page.locator('[data-screen="results-food"] [data-action="open-food-document"]').click();
+  await page.locator('[data-screen="pdf-food"].active').waitFor();
+  assert(await page.getByText('Свойства документа',{exact:true}).isVisible(),'No document properties');
+  await page.screenshot({path:'output/playwright/current-document.png'});
+  await page.locator('[data-action="close-food-document"]').click();
+  assert(await page.locator('[data-screen="results-food"].active').isVisible(),'Wrong document return');
+  assert(failures.length===0,failures.join('\n'));
+  return {status:'PASS',checks:['draft','multiple reasons','comments','39+9 questions','validation','categories','cancel/confirm','task lifecycle','report','document'],pageErrors:failures};
+}

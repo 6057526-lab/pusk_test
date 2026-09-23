@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ПУСК — X3 · Удобное внесение</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/recording.css" />
+<link rel="stylesheet" href="css/proposal.css">
+<link rel="stylesheet" href="css/workspace.css"></head>
+<body>
+  <div class="phone-shell" id="app">
+    <div class="status-bar">
+      <span class="status-time">14:52</span>
+      <span class="status-icons">●●● 📶 🔋</span>
+    </div>
+
+    <!-- ===== SCREEN: DASHBOARD ===== -->
+    <section class="screen active" data-screen="dashboard">
+      <header class="app-header">
+        <button class="icon-btn" data-action="open-menu" aria-label="Меню">☰</button>
+        <div class="header-title trunc">101131 Открытие ПБО после 10-го числа месяца тест 2</div>
+      </header>
+      <div class="scroll-body">
+        <div class="card">
+          <h2 class="card-title">План визитов</h2>
+          <label class="field-label">Период</label>
+          <div class="field-row">
+            <select class="select"><option>2026 г</option><option>2025 г</option></select>
+            <button class="icon-btn ghost" aria-label="Очистить">🗑</button>
+          </div>
+          <div class="table-scroll">
+            <table class="dense-table plan-table">
+              <thead>
+                <tr>
+                  <th class="sticky-col"></th>
+                  <th>Аудит по Безопасности пищи New</th>
+                  <th>тест</th>
+                  <th>Тестовый</th>
+                  <th>Визит по Упр Пред на Высоком Уровне</th>
+                  <th>IPUR. Поддерживающий визит в рамках IPUR процесса</th>
+                  <th>Бизнес-планирование</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="sticky-col">29779 Озёрная</td><td><span class="dot"></span></td><td><span class="dot"></span></td><td><span class="dot"></span></td><td>4</td><td>-</td><td>-</td></tr>
+                <tr><td class="sticky-col">26511 Лакинск</td><td><span class="dot"></span></td><td><span class="dot"></span></td><td><span class="dot"></span></td><td>2</td><td>1</td><td>-</td></tr>
+                <tr><td class="sticky-col">23431 Владивосток Набережная</td><td><span class="dot"></span></td><td>-</td><td>-</td><td>33</td><td>2</td><td>1</td></tr>
+                <tr><td class="sticky-col">26051 Батайск Парк</td><td><span class="dot"></span></td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                <tr><td class="sticky-col">29188 Твид Молл</td><td><span class="dot"></span></td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                <tr><td class="sticky-col">3333333 Test Hub</td><td><span class="dot"></span></td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                <tr class="total-row"><td class="sticky-col total-label">Итого по циклу</td><td>0 %</td><td>0 %</td><td>0 %</td><td>4</td><td>1</td><td>1</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Повторные визиты / IPUR</h2>
+          <label class="field-label">Период</label>
+          <div class="field-row">
+            <select class="select"><option>2026 г</option></select>
+            <button class="icon-btn ghost">🗑</button>
+          </div>
+          <div class="table-scroll">
+            <table class="dense-table ipur-table">
+              <thead>
+                <tr>
+                  <th class="sticky-col"></th>
+                  <th>Практики работы с Людьми 2026</th>
+                  <th>IPUR</th>
+                  <th>Дата IPUR</th>
+                  <th>Визиты IPUR</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="sticky-col">29779 Озёрная</td><td><span class="dot"></span></td><td class="muted">НЕТ</td><td></td><td><span class="dot"></span></td></tr>
+                <tr><td class="sticky-col">26511 Лакинск</td><td><span class="dot"></span></td><td class="yes">ДА</td><td>07.07.2026</td><td>✓</td></tr>
+                <tr><td class="sticky-col">23431 Владивосток Набережная</td><td><span class="dot"></span></td><td class="yes">ДА</td><td>08.07.2026</td><td>✓</td></tr>
+                <tr><td class="sticky-col">26051 Батайск Парк</td><td><span class="dot"></span></td><td class="muted">НЕТ</td><td></td><td><span class="dot"></span></td></tr>
+                <tr><td class="sticky-col">29188 Твид Молл</td><td><span class="dot"></span></td><td class="yes">ДА</td><td>02.09.2026</td><td>✓</td></tr>
+                <tr><td class="sticky-col">3333333 Test Hub</td><td><span class="dot"></span></td><td class="muted">НЕТ</td><td></td><td><span class="dot"></span></td></tr>
+                <tr class="total-row"><td class="sticky-col total-label">Итог по циклу</td><td colspan="4" class="total-label">3.3 %</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Планы действий</h2>
+          <button class="btn btn-outline-blue">Выгрузить в Excel</button>
+          <label class="field-label">ПБО</label>
+          <div class="search-field">
+            <input type="text" placeholder="Начните вводить текст для поиска элемента" />
+            <span class="search-icon">🔍</span>
+          </div>
+          <div class="simple-list-head">
+            <span>ПБО</span>
+            <span>Количество дней с</span>
+          </div>
+          <div class="simple-list-row" data-go="tasks">29779 Озёрная</div>
+          <div class="simple-list-row">26511 Лакинск</div>
+          <div class="simple-list-row">23431 Владивосток Набережная</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN: VISIT ENTRY ===== -->
+    <section class="screen" data-screen="visit-entry">
+      <header class="app-header">
+        <button class="icon-btn" data-action="open-menu">☰</button>
+        <div class="header-title trunc">101131 Открытие ПБО после 10-го числа месяца тест 2</div>
+      </header>
+      <div class="scroll-body pad">
+        <h1 class="page-h1">Внесение визитов</h1>
+        <div class="nav-list">
+          <button class="nav-item" data-open-modal="fill-info" data-checklist="Бизнес-планирование">Бизнес-планирование <span>›</span></button>
+          <button class="nav-item" data-open-modal="fill-info" data-checklist="Практики работы с Людьми 2026">Практики работы с Людьми 2026 <span>›</span></button>
+          <button class="nav-item" data-open-modal="fill-info" data-checklist="Поддерживающие визиты ПУСК">Поддерживающие визиты ПУСК <span>›</span></button>
+          <button class="nav-item" data-open-modal="fill-info" data-checklist="Визит по Управлению Предприятиями на Высоком Уровне">Визит по Управлению Предприятиями на Высоком Уровне <span>›</span></button>
+          <button class="nav-item" data-open-modal="fill-info" data-checklist="Тестовый">Тестовый <span>›</span></button>
+          <button class="nav-item" data-open-modal="fill-info" data-checklist="тест">тест <span>›</span></button>
+          <button class="nav-item" data-open-modal="fill-info" data-checklist="Аудит по Безопасности пищи New">Аудит по Безопасности пищи New <span>›</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN: TASKS ===== -->
+    <section class="screen" data-screen="tasks">
+      <div class="toast success" id="tasks-toast" hidden>
+        <span class="toast-check">✓</span>
+        <div>
+          <div id="toast-text">С условиями соглашения ознакомлен и согласен.</div>
+          <strong>Задача</strong>
+        </div>
+        <button class="toast-x" data-action="hide-toast">×</button>
+      </div>
+      <header class="app-header">
+        <button class="icon-btn" data-action="open-menu">☰</button>
+        <div class="header-title trunc">Задачи</div>
+      </header>
+      <div class="scroll-body">
+        <div class="table-scroll tasks-scroll">
+          <table class="tasks-table">
+            <thead>
+              <tr>
+                <th class="col-name">Название</th>
+                <th class="col-due">Сделать до</th>
+                <th class="col-author">Автор</th>
+                <th class="col-date">Дата создания</th>
+              </tr>
+            </thead>
+            <tbody id="tasks-body">
+              <!-- filled by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN: AGREEMENT ===== -->
+    <section class="screen" data-screen="agreement">
+      <header class="app-header back-header">
+        <button class="icon-btn" data-go="tasks">‹</button>
+        <div class="header-title center">Ознакомьтесь с информацией</div>
+        <button class="icon-btn book">📖</button>
+      </header>
+      <div class="scroll-body pad agreement-body">
+        <div class="white-card">
+          <h3>Форма внесения визита Поддерживающие визиты ПУСК</h3>
+          <p>Поддерживающие визиты проводятся не реже 1 раза в год в каждом ПБО региона и определяются КиП и Директором.</p>
+          <p><strong>ВАЖНО!</strong> Возможности для улучшения обязательно вносите в поле «Комментарии».</p>
+          <h3>Соглашение о неразглашении конфиденциальной информации</h3>
+          <p>Уважаемый респондент</p>
+          <p>Если вы не согласны с условиями настоящего соглашения — не продолжайте работу с формой.</p>
+          <p>Исследование, изображения и интерфейсы содержат <strong>коммерческую тайну</strong>. Запрещается разглашение, распространение и копирование информации.</p>
+          <p>Продолжая работу, вы подтверждаете, что ознакомлены с условиями и обязуетесь их соблюдать.</p>
+          <p>Материалы предназначены исключительно для внутреннего использования в рамках процессов ПУСК.</p>
+        </div>
+      </div>
+      <footer class="sticky-footer split">
+        <button class="btn btn-primary wide" data-go="skeleton" data-next="form-support" data-toast="С условиями соглашения ознакомлен и согласен.">С условиями соглашения ознакомлен и согласен</button>
+        <div class="footer-side">
+          <span class="badge-red">0</span>
+          <button class="icon-btn">⋮</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- ===== SCREEN: SKELETON ===== -->
+    <section class="screen" data-screen="skeleton">
+      <div class="toast success" id="skeleton-toast">
+        <span class="toast-check">✓</span>
+        <div>
+          <div id="skeleton-toast-text">С условиями соглашения ознакомлен и согласен.</div>
+          <strong>Задача</strong>
+        </div>
+        <button class="toast-x">×</button>
+      </div>
+      <header class="app-header back-header">
+        <button class="icon-btn">‹</button>
+        <div class="skel-bar long"></div>
+      </header>
+      <div class="scroll-body pad">
+        <div class="skel-bar mid"></div>
+        <div class="skel-bar mid2"></div>
+        <div class="skel-bar long"></div>
+        <div class="skel-bar short"></div>
+        <div class="skel-squares">
+          <div class="skel-sq"></div>
+          <div class="skel-sq"></div>
+          <div class="skel-sq"></div>
+        </div>
+        <div class="skel-list">
+          <div class="skel-row"><div><div class="skel-bar short"></div><div class="skel-bar long"></div></div><div class="skel-box"></div></div>
+          <div class="skel-row"><div><div class="skel-bar short"></div><div class="skel-bar long"></div></div><div class="skel-box"></div></div>
+          <div class="skel-row"><div><div class="skel-bar short"></div><div class="skel-bar long"></div></div><div class="skel-box"></div></div>
+          <div class="skel-row"><div><div class="skel-bar short"></div><div class="skel-bar long"></div></div><div class="skel-box"></div></div>
+          <div class="skel-row"><div><div class="skel-bar short"></div><div class="skel-bar long"></div></div><div class="skel-box"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN: FORM SUPPORT ===== -->
+    <section class="screen" data-screen="form-support">
+      <header class="app-header back-header">
+        <button class="icon-btn" data-go="tasks">‹</button>
+        <div class="header-title trunc">Заполнить форму Поддержива</div>
+        <button class="icon-btn book">📖</button>
+      </header>
+      <div class="step-nav">
+        <button>«</button><button>‹</button>
+        <span class="step-pill">Поддерживающий визит</span>
+        <button>›</button><button>»</button>
+      </div>
+      <div class="scroll-body pad">
+        <div class="green-card">
+          <div class="green-label">Поддерживающий визит</div>
+          <h3>1. Поддерживающие визиты ПУСК</h3>
+          <p>Выберите направление проведённого вами Поддерживающего визита в данном предприятии и внесите в поле «Комментарии» выявленные во время визита возможности для улучшения по данному направлению.</p>
+          <div class="radio-grid" id="direction-grid">
+            <label><input type="radio" name="dir" /> Доставка</label>
+            <label><input type="radio" name="dir" /> Эффективность трудозатрат</label>
+            <label><input type="radio" name="dir" /> Мобильный заказ</label>
+            <label><input type="radio" name="dir" checked /> Точность</label>
+            <label><input type="radio" name="dir" /> Автораздача</label>
+            <label><input type="radio" name="dir" /> Обслуживание на прилавке и в зале</label>
+            <label><input type="radio" name="dir" /> Управление сменой</label>
+            <label><input type="radio" name="dir" /> Производство</label>
+            <label><input type="radio" name="dir" /> Кафе</label>
+          </div>
+          <label class="white-label">Комментарий</label>
+          <textarea class="comment-box" rows="3"></textarea>
+        </div>
+
+        <details class="accordion" open>
+          <summary>Связанный элемент</summary>
+          <div class="related">☁ <a href="#">Поддерживающие визиты ПУСК …</a></div>
+        </details>
+        <details class="accordion" open>
+          <summary>Напоминания</summary>
+          <button class="btn btn-outline-blue sm">+ Напоминание</button>
+        </details>
+        <details class="accordion" open>
+          <summary>Лента <span class="refresh">↻</span></summary>
+          <input class="msg-input" placeholder="Сообщение" />
+        </details>
+      </div>
+      <footer class="sticky-footer dual">
+        <button class="btn btn-outline-blue" data-action="save-visit">Сохранить</button>
+        <button class="btn btn-outline-red" data-action="finish-visit">Завершить визит</button>
+      </footer>
+    </section>
+
+    <!-- ===== SCREEN: RESULTS ===== -->
+    <section class="screen" data-screen="results">
+      <header class="app-header back-header">
+        <button class="icon-btn" data-go="tasks">‹</button>
+        <div class="header-title center">Ознакомиться с результатами</div>
+        <button class="icon-btn book">📖</button>
+      </header>
+      <div class="scroll-body pad">
+        <div class="file-label">Файл</div>
+        <a class="file-link" data-go="pdf-view">Отчет по визиту в ПБО 3333333 Test Hub от 20.08.2026.pdf</a>
+        <div class="pdf-preview" data-go="pdf-view">
+          <div class="pdf-page">
+            <div class="pdf-alert">Требуется повторный визит (90 дней): Практика работы с Людьми 2026</div>
+            <div class="pdf-h">Замечания</div>
+            <div class="pdf-green-box">Практика работы с Людьми 2026. Полный отчет.</div>
+            <table class="pdf-meta">
+              <tr><td>Дата</td><td>20.08.2026</td><td>Юрид. лицо</td><td>ООО «Система ПБО»</td></tr>
+              <tr><td>Номер ПБО</td><td>3333333</td><td>Консультант</td><td>Тест</td></tr>
+              <tr><td>Название ПБО</td><td>Test Hub</td><td>Менеджер</td><td>—</td></tr>
+              <tr><td colspan="2">Итоговая оценка</td><td colspan="2" class="bad">0.0%</td></tr>
+              <tr><td colspan="4" class="bad">Неудовлетворительный результат. Требуется повторный визит.</td></tr>
+            </table>
+            <div class="pdf-section">ПРИЕМ СОТРУДНИКОВ</div>
+            <table class="pdf-check">
+              <tr><th>№</th><th>Показатель</th><th>Ответ</th><th>Баллы</th></tr>
+              <tr><td>1</td><td class="bad-text">Штатное расписание актуально</td><td class="bad">Нет</td><td>0</td></tr>
+              <tr><td>2</td><td class="bad-text">Вакансии закрыты в срок</td><td class="bad">Нет</td><td>0</td></tr>
+              <tr><td>3</td><td>Онбординг проводится</td><td>Да</td><td>5</td></tr>
+            </table>
+          </div>
+          <div class="pdf-toolbar">
+            <div>Страница: 1 / 3</div>
+            <div class="pdf-tools">↺ − ⊕ ↻</div>
+          </div>
+        </div>
+      </div>
+      <footer class="sticky-footer">
+        <button class="btn btn-outline-blue wide" data-go="process-map">Завершить процесс</button>
+      </footer>
+    </section>
+
+    <!-- ===== SCREEN: PDF FULL ===== -->
+    <section class="screen" data-screen="pdf-view">
+      <header class="app-header back-header">
+        <button class="icon-btn" data-go="results">‹</button>
+        <div class="header-title trunc">Отчет по визиту в ПБО 333333</div>
+        <button class="icon-btn">⋮</button>
+      </header>
+      <div class="scroll-body pdf-full-body">
+        <div class="pdf-full-page">
+          <div class="pdf-banner-g">Практики работы с Людьми 2024</div>
+          <div class="pdf-banner-g2">Полный отчет</div>
+          <h4>Контактные показатели</h4>
+          <table class="pdf-meta dense">
+            <tr><td>Дата</td><td>23.09.2024</td></tr>
+            <tr><td>Номер ПБО</td><td>333333</td></tr>
+            <tr><td>Название ПБО</td><td>333333 Тестовый</td></tr>
+            <tr><td>Юрид. лицо</td><td>ООО «Система ПБО»</td></tr>
+            <tr><td>Итоговая оценка</td><td class="bad">0.0%</td></tr>
+            <tr><td colspan="2" class="bad">Неудовлетворительный результат. Требуется повторный визит (30 дней)…</td></tr>
+          </table>
+          <div class="pdf-section">ПРИЕМ СОТРУДНИКОВ</div>
+          <table class="pdf-check">
+            <tr><th>№</th><th>Показатель</th><th>Ответ</th><th>Баллы</th><th>Комментарии</th></tr>
+            <tr><td>1</td><td class="bad-text">Вакансии закрыты</td><td class="bad">Нет</td><td>0</td><td></td></tr>
+            <tr><td>2</td><td class="bad-text">Адаптация в срок</td><td class="bad">Нет</td><td>0</td><td></td></tr>
+            <tr><td>3</td><td class="bad-text">Наставник назначен</td><td class="bad">Нет</td><td>0</td><td></td></tr>
+          </table>
+          <div class="pdf-section">АДАПТАЦИЯ И УДЕРЖАНИЕ СОТРУДНИКОВ</div>
+          <table class="pdf-check">
+            <tr><td>7</td><td class="bad-text">План адаптации</td><td class="bad">Нет</td><td>0</td><td></td></tr>
+            <tr><td>8</td><td class="bad-text">Обратная связь</td><td class="bad">Нет</td><td>0</td><td></td></tr>
+          </table>
+        </div>
+        <div class="pdf-toolbar fixed-bottomish">
+          <div>Страница: 1 / 3</div>
+          <div class="pdf-tools">↺ − ⊕ ↻</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN: PROCESS MAP ===== -->
+    <section class="screen" data-screen="process-map">
+      <header class="app-header back-header">
+        <button class="icon-btn" data-go="results">‹</button>
+        <div class="header-title">Карта процесса</div>
+      </header>
+      <div class="process-body">
+        <div class="process-card">
+          <div class="process-role">👤 <strong>Инициатор</strong></div>
+          <div class="flow">
+            <div class="flow-start"><span class="green-dot"></span></div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box yellow">Получение опроса</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box yellow">Создание pdf отчета</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box yellow">Изменение элемента опроса</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box blue">Ознакомиться с результатами</div>
+            <div class="flow-arrow"><span class="flow-label">Завершить процесс</span> ↓</div>
+            <div class="flow-end"></div>
+          </div>
+        </div>
+        <button class="fab-grid" data-go="tasks" title="К задачам">▦</button>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN: PBO SEARCH ===== -->
+    <section class="screen" data-screen="pbo-search">
+      <header class="app-header back-header">
+        <button class="icon-btn" data-action="close-pbo-search">‹</button>
+        <div class="header-title">Поиск</div>
+      </header>
+      <div class="search-screen-bar">
+        <input type="search" id="pbo-query" placeholder="Введите текст для поиска" />
+        <button class="search-filter" aria-label="Фильтр">▽</button>
+      </div>
+      <div class="scroll-body">
+        <table class="pbo-table">
+          <thead>
+            <tr><th>Название</th><th>Юридическое лицо</th></tr>
+          </thead>
+          <tbody id="pbo-search-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN: CHECKLIST META ===== -->
+    <section class="screen" data-screen="checklist-meta">
+      <header class="app-header back-header">
+        <button class="icon-btn" data-action="back-to-modal">‹</button>
+        <div class="header-title trunc">Аудит по Безопасности пищи New</div>
+      </header>
+      <div class="scroll-body meta-list">
+        <div class="meta-row"><span class="lbl">Учитывать в цикле</span><span class="val">Да</span></div>
+        <div class="meta-row"><span class="lbl">Требуемое количество посещений/год</span><span class="val">1</span></div>
+        <div class="meta-row"><span class="lbl">Диагностический чек-лист</span><span class="val">Нет</span></div>
+        <div class="meta-row"><span class="lbl">Проходной минимум</span><span class="val">80</span></div>
+        <div class="meta-card">
+          <h3>Настройки аналитических панелей</h3>
+          <div class="meta-row"><span class="lbl">Название чек-листа в отчётах</span><span class="val">Аудит по Безопасности пищи New</span></div>
+          <div class="meta-row"><span class="lbl">Показывать результат</span><span class="val">Да</span></div>
+          <div class="meta-row"><span class="lbl">Показывать топ вопросов</span><span class="val">Да</span></div>
+          <div class="meta-row"><span class="lbl">Показывать неудовлетворительные результаты</span><span class="val">Да</span></div>
+          <div class="meta-row"><span class="lbl">Показывать выполнение критических вопросов</span><span class="val">Да</span></div>
+          <div class="meta-row"><span class="lbl">Показывать факт фальсификации</span><span class="val">Да</span></div>
+          <div class="meta-row"><span class="lbl">Показывать повторный визит</span><span class="val">Да</span></div>
+          <div class="meta-row"><span class="lbl">Показывать дату повторного визита</span><span class="val">Да</span></div>
+        </div>
+        <div class="meta-card"><h3>Настройки отображения данных по повторному визиту</h3><div class="meta-row"><span class="lbl">Показать дату повторного визита</span><span class="val">Да</span></div><div class="meta-row"><span class="lbl">Показать результат повторного визита</span><span class="val">Да</span></div><div class="meta-row"><span class="lbl">Показать выполнение критических вопросов в повторном визите</span><span class="val">Да</span></div></div><div class="meta-row"><span class="lbl">Информация по прохождению</span><span class="val">—</span></div><button class="btn btn-outline-blue wide" style="margin-top:14px" data-go="checklist-preview">Смотреть вопросы чек-листа</button><details class="accordion" open><summary>Статус</summary><div class="meta-row">Активен</div></details><details class="accordion" open><summary>Лента</summary><input class="msg-input" placeholder="Сообщение"><div class="feed-card">Система<br>13 апреля 2026 г., 12:31<br><br>Процесс "Создание чек-листа" запущен</div></details>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN: CHECKLIST PREVIEW ===== -->
+    <section class="screen" data-screen="checklist-preview">
+      <header class="app-header back-header">
+        <button class="icon-btn" data-go="checklist-meta">‹</button>
+        <div class="header-title trunc" id="preview-section-title">Предотвращение заражения</div>
+        <button class="icon-btn">🔔</button>
+        <button class="icon-btn book">📖</button>
+      </header>
+      <div class="cat-nav">
+        <button data-action="preview-prev">«</button>
+        <button data-action="preview-prev">‹</button>
+        <div class="cat-pill" id="preview-cat-pill">Предотвращение заражения</div>
+        <button data-action="preview-next">›</button>
+        <button data-action="preview-next">»</button>
+      </div>
+      <div class="scroll-body checklist-preview">
+        <div class="cp-head"><span></span><span>баллов</span></div>
+        <div id="checklist-preview-body"></div>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN: AGREEMENT FOOD ===== -->
+    <section class="screen" data-screen="agreement-food">
+      <header class="app-header back-header">
+        <button class="icon-btn" data-go="tasks">‹</button>
+        <div class="header-title center">Ознакомьтесь с информацией</div>
+        <button class="icon-btn book">📖</button>
+      </header>
+      <div class="scroll-body pad agreement-body">
+        <div class="white-card">
+          <h3>Форма внесения визита Аудит по Безопасности пищи New</h3>
+          <p>Аудит проводится по чек-листу безопасности пищи. Ответьте на все вопросы. При ответе «Нет» укажите причину.</p>
+          <p><strong>ВАЖНО!</strong> Критические вопросы обязательны. Без них визит завершить нельзя.</p>
+          <h3>Соглашение о неразглашении конфиденциальной информации</h3>
+          <p>Уважаемый респондент</p>
+          <p>Вы не имеете права раскрывать, разглашать или каким-либо иным образом распространять третьим лицам информацию, доступ к которой вам будет предоставлен.</p>
+          <p>Вы должны использовать эту информацию исключительно в целях прохождения исследования и не использовать ее для каких-либо других целей.</p>
+          <p>Вы не имеете права копировать (в цифровой или физической форме) какие-либо элементы этого исследования, за исключением случаев, когда это прямо предусмотрено функциями исследования. В этих случаях после прохождения исследования вы обязаны немедленно удалить информацию, составляющую коммерческую тайну, со всех электронных устройств.</p>
+          <p>Вы несете полную ответственность за какое-либо несанкционированное раскрытие информации, составляющей коммерческую тайну и/или ее неправомерное использование. Вы обязаны возместить все убытки причиненные разглашением или неправомерным использованием такой информации, в соответствии с действующим законодательством Российской Федерации.</p>
+        </div><div class="related-blocks"><details open><summary>Напоминания</summary><button class="btn btn-outline-blue" data-action="reminder">+ Напоминание</button></details><details open><summary>Лента</summary><input class="msg-input" placeholder="Сообщение"></details></div>
+      </div>
+      <footer class="sticky-footer split">
+        <button class="btn btn-primary wide" data-action="agree-food">С условиями соглашения ознакомлен и согласен</button>
+        <div class="footer-side">
+          <span class="badge-red">0</span>
+          <button class="icon-btn">⋮</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- ===== SCREEN: FORM FOOD AUDIT ===== -->
+    <section class="screen" data-screen="form-food">
+      <header class="app-header back-header">
+        <button class="icon-btn" data-go="visit-overview">‹</button>
+        <div class="header-title trunc">Заполнить форму Аудит по Безопасности пищи New</div>
+        <button class="icon-btn book">📖</button>
+      </header>
+      <div class="cat-nav">
+        <button data-action="food-cat-first">«</button>
+        <button data-action="food-cat-prev">‹</button>
+        <div class="cat-pill" id="food-cat-pill">…</div>
+        <button data-action="food-cat-next">›</button>
+        <button data-action="food-cat-last">»</button>
+      </div>
+      <div class="proposal-nav" id="proposal-nav"></div><div class="scroll-body" id="food-scroll"><div class="validation-box" id="food-validation" hidden></div><div id="food-form-body"></div></div>
+      <footer class="sticky-footer dual">
+        <button class="btn btn-outline-blue" data-go="visit-overview">Разделы</button>
+        <button class="btn btn-outline-red" data-action="group-next">Дальше</button>
+      </footer>
+    </section>
+
+    <section class="screen" data-screen="review-food">
+      <header class="app-header back-header"><button class="icon-btn" data-go="form-food" aria-label="Вернуться к ответам">‹</button><div class="header-title">Проверка перед завершением</div></header>
+      <div class="scroll-body pad" id="review-food-body"></div>
+      <footer class="sticky-footer dual"><button class="btn btn-outline-blue" data-go="form-food">К ответам</button><button class="btn btn-primary" data-action="review-confirm">Далее</button></footer>
+    </section>
+
+    <section class="screen" data-screen="visit-home"><header class="app-header"><div><small class="eyebrow">ПУСК / ВИЗИТЫ</small><h1>Мой визит</h1></div><button class="icon-btn" data-action="open-menu" aria-label="Меню">☰</button></header><div class="scroll-body pad" id="visit-home-body"></div></section>
+    <section class="screen" data-screen="visit-overview"><header class="app-header"><button class="icon-btn" data-go="visit-home" aria-label="К моему визиту">‹</button><div class="header-title">Разделы визита</div></header><div class="scroll-body pad" id="visit-overview-body"></div><footer class="sticky-footer"><button class="btn btn-primary" data-action="finish-food">Проверить визит</button></footer></section>
+    <!-- ===== SCREEN: RESULTS FOOD ===== -->
+    <section class="screen" data-screen="results-food">
+      <header class="app-header back-header"><button class="icon-btn" data-go="tasks">‹</button><div class="header-title">Ознакомиться с результатами</div><span class="icon-btn book">♧</span></header>
+      <div class="scroll-body pad"><div class="report-label">Файл отчёта</div><button class="text-link report-name" data-action="open-food-document"></button><div class="report-host"></div><div class="report-info">Информация по визиту</div></div>
+      <footer class="sticky-footer"><button class="btn btn-outline-blue" data-action="finish-process-food">Завершить процесс</button></footer>
+    </section>
+    <section class="screen" data-screen="pdf-food">
+      <header class="app-header back-header"><button class="icon-btn" data-action="close-food-document">‹</button><div class="header-title trunc report-name"></div><span>⋮</span></header>
+      <div class="scroll-body pad"><div class="report-host"></div><details open class="document-properties"><summary>Свойства документа</summary><dl><dt>Создан</dt><dd>22 сентября 2026 г., 15:15</dd><dt>Изменен</dt><dd>22 сентября 2026 г., 15:15</dd><dt>Размер</dt><dd>30 КБ</dd></dl></details><div class="related-blocks"><details open><summary>Лента</summary><input class="msg-input" placeholder="Сообщение"></details></div></div>
+    </section>
+
+    <!-- ===== REPORTS HUB ===== -->
+    <section class="screen" data-screen="reports">
+      <header class="app-header">
+        <button class="icon-btn" data-action="open-menu" aria-label="Меню">☰</button>
+        <div class="header-title trunc">101131 Открытие ПБО после 10-го числа месяца тест 2</div>
+      </header>
+      <div class="scroll-body pad">
+        <h1 class="page-h1">Отчеты по визитам</h1>
+        <div class="nav-list">
+          <button class="nav-item" data-go="report-full">Полный отчет по визиту <span>›</span></button>
+          <button class="nav-item" data-go="report-pbo">Посещения ПБО <span>›</span></button>
+          <button class="nav-item" data-go="report-ipur">Сводный отчет по БП IPUR <span>›</span></button>
+        </div>
+        <label class="field-label" style="margin-top:16px">ПБО</label>
+        <div class="search-field" data-action="open-report-pbo-search" role="button">
+          <input type="text" placeholder="Начните вводить текст для поиска элемента" readonly />
+          <span class="search-icon">🔍</span>
+        </div>
+        <div id="report-filter-chip" class="filter-chip" hidden><span id="report-filter-name"></span> <button class="text-link" data-action="clear-report-filter" aria-label="Очистить фильтр">×</button></div><div class="report-pbo-list" id="reports-pbo-list"></div>
+      </div>
+    </section>
+
+    <!-- ===== FULL VISIT REPORT ===== -->
+    <section class="screen" data-screen="report-full">
+      <header class="app-header">
+        <button class="icon-btn" data-action="open-menu">☰</button>
+        <div class="header-title trunc">101131 Открытие ПБО после 10-го числа месяца тест 2</div>
+      </header>
+      <div class="scroll-body pad">
+        <h1 class="page-h1">Полный отчет по визиту</h1>
+        <label class="field-label">Визит</label>
+        <div class="search-field" data-action="open-visit-search" role="button">
+          <input type="text" id="full-visit-value" placeholder="Начните вводить текст для поиска элемента" readonly />
+          <span class="search-icon">🔍</span>
+        </div>
+        <div id="full-report-file" hidden>
+          <div class="file-label">Файл</div>
+          <a class="file-link" data-action="toast-dl">Отчет по визиту в ПБО 3333333 Test Hub от 22.09.2026.pdf</a>
+          <div class="pdf-preview report-pdf">
+            <div class="pdf-page">
+              <table class="pdf-meta dense">
+                <tr><td>Дата</td><td>22.09.2026</td></tr>
+                <tr><td>Номер ПБО</td><td>3333333</td></tr>
+                <tr><td>Название ПБО</td><td>3333333 Test Hub</td></tr>
+                <tr><td>Юрид. лицо</td><td>ООО «Система ПБО»</td></tr>
+                <tr><td>Итоговая оценка</td><td>91.0%</td></tr>
+              </table>
+              <div class="pdf-section">Аудит по Безопасности пищи - некритические вопросы</div>
+              <div class="pdf-section">ГИГИЕНА И САНИТАРИЯ</div>
+              <table class="pdf-check">
+                <tr><th>№</th><th>Вопрос</th><th>Ответ</th><th>Баллы</th></tr>
+                <tr><td>10</td><td>Мытьё рук</td><td class="bad">Нет</td><td>0</td></tr>
+                <tr><td>13</td><td>Система мытья рук</td><td>Да</td><td>5</td></tr>
+              </table>
+            </div>
+            <div class="pdf-toolbar"><div>Страница: 1 / 5</div><div class="pdf-tools">− ⊕ ⟳</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== VISIT SEARCH (full report) ===== -->
+    <section class="screen" data-screen="visit-search">
+      <header class="app-header back-header">
+        <button class="icon-btn" data-go="report-full">‹</button>
+        <div class="header-title">Поиск</div>
+      </header>
+      <div class="search-screen-bar">
+        <input type="search" id="visit-query" placeholder="Введите текст для поиска" />
+        <button class="search-filter">▽</button>
+      </div>
+      <div class="scroll-body">
+        <table class="pbo-table">
+          <thead><tr><th>Название</th><th>Старт периода визита</th></tr></thead>
+          <tbody id="visit-search-body"></tbody>
+        </table>
+        <div class="pager"><span class="disabled">‹</span><span class="on">1</span><span>2</span><span>›</span></div>
+      </div>
+    </section>
+
+    <!-- ===== PBO VISITS STATS ===== -->
+    <section class="screen" data-screen="report-pbo">
+      <header class="app-header">
+        <button class="icon-btn" data-action="open-menu">☰</button>
+        <div class="header-title trunc">101131 Открытие ПБО после 10-го числа месяца тест 2</div>
+      </header>
+      <div class="scroll-body pad">
+        <h1 class="page-h1">Посещения ПБО</h1>
+        <div class="card">
+          <h2 class="card-title">Статистика по чек-листу</h2>
+          <label class="field-label">Чек-лист</label>
+          <div class="search-field" data-action="open-checklist-search" role="button">
+            <input type="text" id="pbo-visit-checklist" value="Аудит по Безопасности пищи New" readonly />
+            <span class="search-icon">🔍</span>
+          </div>
+          <label class="field-label">Период</label>
+          <div class="field-row">
+            <select class="select" id="pbo-visit-period">
+              <option>2026 г</option>
+              <option>2025 г</option>
+              <option>2024 г</option>
+            </select>
+            <button class="icon-btn ghost">🗑</button>
+          </div>
+          <div class="table-scroll">
+            <table class="dense-table pbo-visits-table" id="pbo-visits-table">
+              <thead>
+                <tr>
+                  <th class="sticky-col"></th>
+                  <th>Визит 1</th>
+                  <th>Итого по циклу</th>
+                </tr>
+              </thead>
+              <tbody id="pbo-visits-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CHECKLIST SEARCH ===== -->
+    <section class="screen" data-screen="checklist-search">
+      <header class="app-header back-header">
+        <button class="icon-btn" data-go="report-pbo">‹</button>
+        <div class="header-title">Поиск</div>
+      </header>
+      <div class="search-screen-bar">
+        <input type="search" id="checklist-query" placeholder="Введите текст для поиска" />
+        <button class="search-filter">▽</button>
+      </div>
+      <div class="scroll-body">
+        <table class="pbo-table">
+          <thead><tr><th>Название</th></tr></thead>
+          <tbody id="checklist-search-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== IPUR SUMMARY ===== -->
+    <section class="screen" data-screen="report-ipur">
+      <header class="app-header">
+        <button class="icon-btn" data-action="open-menu">☰</button>
+        <div class="header-title trunc">101131 Открытие ПБО после 10-го числа месяца тест 2</div>
+        <button class="icon-btn" data-action="toast-dl" title="Скачать">⬇</button>
+      </header>
+      <div class="ipur-layout">
+        <aside class="ipur-rail">
+          <button class="rail-btn" title="Папки">📁</button>
+          <button class="rail-btn pin" title="Закрепить">📌</button>
+        </aside>
+        <div class="ipur-main">
+          <div class="table-scroll ipur-scroll">
+            <table class="ipur-table">
+              <thead>
+                <tr>
+                  <th class="sticky-col">ПБО</th>
+                  <th>Дата постановки на IPUR</th>
+                  <th>Дата выхода из IPUR</th>
+                  <th>Количество дней в IPUR</th>
+                  <th>Визиты R</th>
+                  <th>I</th>
+                  <th>(h)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-go="pbo-card" data-pbo="23431 Владивосток Набережная">
+                  <td class="sticky-col"><strong>23431 Владивосток Набережная</strong></td>
+                  <td>07.07.2026</td>
+                  <td>—</td>
+                  <td>77</td>
+                  <td>26</td>
+                  <td>Г</td>
+                  <td>п</td>
+                </tr>
+                <tr data-go="pbo-card" data-pbo="26511 Лакинск">
+                  <td class="sticky-col"><strong>26511 Лакинск</strong></td>
+                  <td>08.07.2026</td>
+                  <td>02.09.2026</td>
+                  <td>56</td>
+                  <td>12</td>
+                  <td>к</td>
+                  <td>Е</td>
+                </tr>
+                <tr data-go="pbo-card" data-pbo="29188 Твид Молл">
+                  <td class="sticky-col"><strong>29188 Твид Молл</strong></td>
+                  <td>02.09.2026</td>
+                  <td>—</td>
+                  <td>20</td>
+                  <td>4</td>
+                  <td>С</td>
+                  <td>с</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr><td class="sticky-col"><strong>Итого</strong></td><td></td><td></td><td>153</td><td>42</td><td></td><td></td></tr>
+              </tfoot>
+            </table>
+          </div>
+          <div class="ipur-filters">
+            <label class="field-label">ПБО</label>
+            <div class="search-field" data-action="open-report-pbo-search" role="button">
+              <input type="text" placeholder="Начните вводить текст для поиска элемента" readonly />
+              <span class="search-icon">🔍</span>
+            </div>
+            <label class="chk"><input type="checkbox" /> Не заполнено</label>
+            <button class="btn btn-primary sm" data-action="open-report-pbo-search">Поиск</button>
+            <div class="report-pbo-list compact" id="ipur-pbo-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== REPORT PBO SEARCH ===== -->
+    <section class="screen" data-screen="report-pbo-search">
+      <header class="app-header back-header">
+        <button class="icon-btn" data-action="close-report-pbo-search">‹</button>
+        <div class="header-title">Поиск</div>
+      </header>
+      <div class="search-screen-bar">
+        <input type="search" id="report-pbo-query" placeholder="Введите текст для поиска" />
+        <button class="search-filter">▽</button>
+      </div>
+      <div class="scroll-body">
+        <table class="pbo-table">
+          <thead><tr><th></th><th>Название</th><th>Юридическое лицо</th></tr></thead>
+          <tbody id="report-pbo-search-body"></tbody>
+        </table>
+        <div class="pager"><span class="disabled">‹</span><span class="on">1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>›</span></div>
+      </div>
+    </section>
+
+    <!-- ===== PBO CARD ===== -->
+    <section class="screen" data-screen="pbo-card">
+      <header class="app-header back-header">
+        <button class="icon-btn" data-go="reports">‹</button>
+        <div class="header-title trunc" id="pbo-card-title">3333333 Test Hub</div>
+      </header>
+      <div class="scroll-body pad">
+        <div class="pbo-details" id="pbo-details"></div><div class="pbo-attrs">
+          <span class="chip">Авто</span>
+          <span class="chip">На парковке</span>
+          <span class="chip">Ночное окно</span>
+          <span class="chip">Ячейки</span>
+        </div>
+        <div class="pbo-attrs">
+          <div class="chip-head">Дополнительные параметры</div>
+          <span class="chip">Наличие кафе</span>
+          <span class="chip">Наличие киоска</span>
+          <span class="chip">Наличие завтрака</span>
+        </div>
+        <details class="accordion" open>
+          <summary>Статус</summary>
+          <div class="pbo-status-row">Статус работы</div>
+        </details>
+        <details class="accordion" open>
+          <summary>Лента <span class="refresh">↻</span></summary>
+          <input class="msg-input" placeholder="Сообщение" />
+          <div class="feed-card">
+            <div class="feed-top"><strong>Система</strong> · 21 августа 2026 г., 8:00</div>
+            <div>Процесс «Актуализация планов действий» запущен</div>
+            <div class="feed-meta">21.08.2026 08:00 · <a href="#">Ответить</a></div>
+          </div>
+          <div class="feed-card">
+            <div class="feed-top"><strong>Система</strong> · 17 июля 2026 г., 8:53</div>
+            <div>Процесс «Актуализация планов действий» запущен</div>
+            <div class="feed-meta">17.07.2026 08:53 · <a href="#">Ответить</a></div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ===== SIDE MENU ===== -->
+    <div class="menu-overlay" id="menu" hidden>
+      <div class="menu-panel">
+        <button class="menu-close" data-action="close-menu">×</button>
+        <button class="menu-item active" data-go="dashboard" data-action="close-menu"><span class="mi orange">⌂</span> Главная</button>
+        <button class="menu-group open" data-action="toggle-group">
+          <span class="mi">📁</span> ПУСК <span class="chev">⌃</span>
+        </button>
+        <div class="menu-sub">
+          <button data-go="dashboard" data-action="close-menu">Dashboard ПУСК</button>
+          <button data-go="visit-entry" data-action="close-menu">Внесение визитов</button>
+          <button data-go="reports" data-action="close-menu">Отчеты по визитам</button>
+          <button>Отчеты по ПД</button>
+          <button>Аналитика по визитам</button>
+          <button>Анализ Бизнес-результатов</button>
+        </div>
+        <button class="menu-group" data-action="toggle-group">
+          <span class="mi orange">⚡</span> NABIT <span class="chev">⌄</span>
+        </button>
+        <button class="menu-item" data-go="tasks" data-action="close-menu"><span class="mi">☑</span> Задачи</button>
+        <button class="menu-item"><span class="mi">🔔</span> Лента оповещений</button>
+      </div>
+    </div>
+
+
+    <section class="screen" data-screen="calendar">
+      <header class="app-header back-header"><button class="icon-btn" data-action="calendar-close">‹</button><div class="header-title">Выберите дату</div></header>
+      <div class="calendar-panel"><div class="calendar-nav"><button data-action="calendar-prev" aria-label="Предыдущий месяц">‹</button><span id="calendar-month"></span><button data-action="calendar-next" aria-label="Следующий месяц">›</button></div><div class="calendar-week"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span></div><div class="calendar-days" id="calendar-days"></div><button class="calendar-today" data-action="calendar-today">Сегодня</button></div>
+    </section>
+    <section class="screen" data-screen="access-denied"><header class="app-header back-header"><button class="icon-btn" data-go="report-pbo-search">‹</button><div class="header-title trunc">Доступ к элементу</div></header><div class="scroll-body pad"><h3 style="font-size:14px;text-align:center;margin-top:10px">Доступ к элементу запрещен</h3></div><footer class="sticky-footer"><button class="btn btn-outline-blue" data-go="report-pbo-search">Закрыть</button></footer></section>
+    <div class="finish-overlay" id="finish-confirm" hidden role="dialog" aria-modal="true" aria-label="Завершить визит">
+      <div class="finish-sheet"><div class="sheet-handle"></div><p>Укажите наличие факта фальсификации, если он был обнаружен при проведении визита. При наличии фальсификации результат визита будет неудовлетворительным независимо от итогов визита в %. Внимание! После нажатия кнопки "Завершить визит" редактирование визита будет недоступно!</p><fieldset><legend>Факт фальсификации<span class="req">*</span></legend><label><input type="radio" name="falsification" value="Да"><span>Да</span></label><label><input type="radio" name="falsification" value="Нет" checked><span>Нет</span></label></fieldset><p id="falsification-error" class="field-error" hidden>Укажите факт фальсификации.</p><button class="btn btn-outline-red" data-action="confirm-food">Завершить визит</button> <button class="btn btn-outline-blue" data-action="cancel-finish">Отмена</button></div>
+    </div>
+
+    <!-- ===== MODAL: FILL INFO ===== -->
+    <div class="modal-overlay" id="modal-fill-info" hidden>
+      <div class="modal">
+        <header class="modal-header">
+          <button class="icon-btn" data-action="close-modal">‹</button>
+          <div class="header-title trunc">Заполнить информацию</div>
+        </header>
+        <div class="modal-body">
+          <label class="field-label">Дата визита<span class="req">*</span></label>
+          <div class="input-with-icon date-control"><input type="text" value="22.09.2026" id="visit-date" aria-label="Дата визита" /><button data-action="calendar-open" aria-label="Открыть календарь">▦</button></div>
+          <p id="visit-required" class="field-error" hidden>Заполните дату визита и ПБО.</p><label class="field-label">ПБО<span class="req">*</span></label>
+          <div class="input-with-icon" id="pbo-trigger" data-action="open-pbo-search" role="button" tabindex="0">
+            <input type="text" value="" id="visit-pbo" placeholder="Начните вводить текст для поиска" readonly />
+            <span>🔍</span>
+          </div>
+          <p class="hint">Для выбора недоступны недавно открытые ПБО, а также ПБО, по которым назначен IPUR</p>
+          <label class="field-label">Чек-лист</label>
+          <a href="#" class="link" id="checklist-link" data-action="open-checklist-meta">Поддерживающие визиты ПУСК</a>
+        </div>
+        <footer class="modal-footer">
+          <button class="btn btn-primary" data-action="submit-fill">Заполнить визит</button>
+          <button class="btn btn-outline-red" data-action="close-modal">Отмена</button>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <div class="hint-bar">
+    X3 · Удобное внесение · <a href="../../demo/index.html">DEV</a>
+  </div>
+
+  <script src="js/questions.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,72 @@
+async(page) => {
+ const assert=(v,m)=>{if(!v)throw Error(m)}, errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('http://127.0.0.1:8767/variants/product-proposal/index.html');
+ await page.setViewportSize({width:390,height:664});
+ await page.getByRole('button',{name:'Меню',exact:true}).click();
+ await page.getByRole('button',{name:'Внесение визитов',exact:true}).click();
+ await page.getByRole('button',{name:'Аудит по Безопасности пищи New ›',exact:true}).click();
+ await page.getByRole('button',{name:'Открыть календарь',exact:true}).click();
+ await page.getByRole('button',{name:'22',exact:true}).click();
+ await page.locator('#pbo-trigger').click();
+ await page.locator('#pbo-query').fill('несуществующий');
+ assert(await page.locator('#pbo-empty').isVisible(),'empty picker');
+ await page.locator('#pbo-query').fill('333');
+ await page.screenshot({path:'output/playwright/x2-picker.png'});
+ await page.getByRole('button',{name:'3333333 Test Hub',exact:true}).click();
+ await page.getByRole('button',{name:'Заполнить визит',exact:true}).click();
+ await page.locator('button[data-task="form-food"]').click();
+ await page.locator('[data-action="agree-food"]').click();
+ await page.screenshot({path:'output/playwright/x2-tasks.png'});
+ await page.locator('button[data-task="form-food"]').click();
+ const q10=page.locator('.audit-green[data-qid="10.FS"]');
+ await q10.getByRole('radio',{name:'Нет',exact:true}).check();
+ await q10.getByRole('checkbox').nth(0).check();
+ await q10.getByRole('checkbox').nth(2).check();
+ await q10.getByRole('textbox').fill('Проверка X2');
+ await page.locator('[data-action="save-food"]').click();
+ await page.locator('button[data-task="form-food"]').click();
+ assert(await q10.getByRole('textbox').inputValue()==='Проверка X2','draft comment');
+ assert(await q10.locator('input[type=checkbox]:checked').count()===2,'draft reasons');
+ await page.locator('[data-action="finish-food"]').click();
+ assert((await page.locator('#food-validation').innerText()).includes('47'),'missing count');
+ await page.locator('[data-action="next-missing"]').click();
+ assert(await page.locator('.audit-green[data-qid="11.FS"] .inline-missing').isVisible(),'first missing');
+ const all=page.locator('.audit-green');
+ for(let i=0;i<await all.count();i++){
+   const b=all.nth(i);if(!await b.locator('input[type=radio]:checked').count())await b.getByRole('radio',{name:'Да',exact:true}).check();
+ }
+ assert((await page.locator('#food-validation').innerText()).includes('9'),'live missing count');
+ await page.locator('[data-action="next-missing"]').click();
+ assert(await page.locator('.audit-green').count()===9,'jump across sections');
+ for(const r of await page.locator('.audit-green').getByRole('radio',{name:'Да',exact:true}).all())await r.check();
+ assert(!await page.locator('#food-validation').isVisible(),'resolved validation');
+ assert((await page.locator('.progress-line').innerText()).includes('48 из 48'),'progress');
+ await page.locator('[data-action="select-food-cat"][data-index="0"]').click();
+ await page.screenshot({path:'output/playwright/x2-form.png'});
+ for(const size of [{width:334,height:732},{width:390,height:664},{width:844,height:390}]){
+   await page.setViewportSize(size);
+   const bad=await page.locator('#food-scroll').evaluate(el=>el.scrollWidth>el.clientWidth+1);
+   assert(!bad,'horizontal overflow '+size.width);
+   const footer=await page.locator('[data-screen="form-food"] .sticky-footer').boundingBox();
+   const body=await page.locator('#food-scroll').boundingBox();
+   assert(body.y+body.height<=footer.y+1,'footer overlaps content');
+ }
+ await page.setViewportSize({width:390,height:664});
+ await page.locator('[data-action="finish-food"]').click();
+ await page.locator('[data-screen="review-food"].active').waitFor();
+ assert((await page.locator('#review-food-body').innerText()).includes('Нет — 1'),'review answers');
+ await page.screenshot({path:'output/playwright/x2-review.png'});
+ await page.locator('[data-action="review-edit"][data-index="1"]').click();
+ assert(await page.locator('.audit-green').count()===9,'review edit section');
+ await page.locator('[data-action="finish-food"]').click();
+ await page.locator('[data-action="review-confirm"]').click();
+ await page.locator('[data-action="cancel-finish"]').click();
+ assert(await page.locator('[data-screen="review-food"].active').isVisible(),'cancel review');
+ await page.locator('[data-action="review-confirm"]').click();
+ await page.locator('[data-action="confirm-food"]').click();
+ await page.locator('button[data-task="results-food"]').click();
+ assert((await page.locator('[data-screen="results-food"] .report-sheet').first().innerText()).includes('Проверка X2'),'report content');
+ assert(errors.length===0,errors.join(';'));
+ return {status:'PASS',checks:['calendar','PBO empty/search/select','task cards','draft/reasons/comment','live errors','cross-section jump','48 answers','review/edit/cancel/confirm','report','334/390/844 widths','footer'],errors};
+}
