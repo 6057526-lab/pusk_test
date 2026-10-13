@@ -143,6 +143,7 @@
     reasons: {},
     comments: {},
     foodDone: false,
+    processFinished: false,
     foodAgreed: false,
     foodDraftDate: "22 сентября 2026 г., 12:36",
     pboVisitChecklist: "Аудит по Безопасности пищи New",
@@ -164,7 +165,6 @@
   }
 
   function go(name) {
-    if(name==='dashboard')name='visit-home';
     if(name==='visit-home')renderVisitHome();
     if(name==='visit-overview')renderOverview();
     state.screen = name;
@@ -493,7 +493,7 @@
     // продолжаем ту же сохранённую форму, без NDA и без сброса ответов
     if (state.foodAgreed) {
       renderValidation(false);
-      runSkeletonThen("form-food", "");
+      runSkeletonThen("visit-overview", "");
       return;
     }
     runSkeletonThen("agreement-food", "");
@@ -560,7 +560,7 @@
     state.foodCompletedAt = new Date().toISOString();
     $('#finish-confirm').hidden = true;
     TASKS = TASKS.filter(t => t.id !== 'form-food');
-    persistVisit();go('visit-home');
+    persistVisit();go('tasks');
     setTimeout(() => {
       TASKS.unshift({id:'results-food',name:`Ознакомиться с результатами Аудит по Безопасности пищи New в ПБО ${state.visitPbo} от ${state.visitDate}`,sub:'Формирование результата',author:'Администратор ПКВ',date:state.foodDraftDate,screen:'results-food'});
       if (state.screen === 'tasks') renderTasks();
@@ -583,7 +583,7 @@
     $('#visit-required').hidden = true;
     if (state.foodDone || state.visitPbo !== pbo || state.visitDate !== date) {
       state.answers = {}; state.reasons = {}; state.comments = {}; state.photos = {};
-      state.foodAgreed = false; state.foodDone = false; state.falsification = null;
+      state.foodAgreed = false; state.foodDone = false; state.processFinished = false; state.falsification = null;
       state.foodCatIdx = 0;state.groupIdx=0;
       $("#food-form-body").innerHTML = "";
       validationAttempted=false;lastMissingId=null;
@@ -592,7 +592,7 @@
     }
     state.visitPbo = pbo; state.visitDate = date;
     upsertFoodFillTask({screen:state.foodAgreed ? 'form-food' : 'agreement-food',sub:'Прохождение чек-листа'});
-    state.visitStarted=true;persistVisit();closeModal();go(state.foodAgreed?'visit-overview':'agreement-food');
+    state.visitStarted=true;persistVisit();closeModal();go('tasks');showToast('Задача создана');setTimeout(hideToast,1600);
   }
 
   function renderReport() {
@@ -656,11 +656,12 @@
     if (action === 'confirm-food') confirmFoodAudit();
     if (action === 'cancel-finish') $('#finish-confirm').hidden=true;
     if (action === 'agree-food') {
-      markFoodAgreed();persistVisit();go('visit-overview');
+      markFoodAgreed();persistVisit();go('tasks');showToast('С условиями соглашения ознакомлен и согласен.');setTimeout(hideToast,1600);
     }
     if (action === 'open-food-document') {state.documentReturn=state.screen;go('pdf-food');}
     if (action === 'close-food-document') go(state.documentReturn || 'results-food');
-    if (action === 'finish-process-food') { go('visit-home'); return; 
+    if (action === 'finish-process-food') {
+      state.processFinished=true;persistVisit();
       TASKS=TASKS.filter(x=>x.id!=='results-food');go('tasks');showToast('Процесс завершен');setTimeout(hideToast,1600);
     }
     if (action === 'clear-report-filter') {state.reportFilter='';$('#report-filter-chip').hidden=true;renderReportsPboList();}
@@ -916,7 +917,7 @@
   function persistVisit(){
     if(!state.visitStarted)return;
     snapshotFoodFormDom();
-    try{localStorage.setItem(STORAGE_KEY,JSON.stringify({version:1,visitStarted:true,visitPbo:state.visitPbo,visitDate:state.visitDate,groupIdx:state.groupIdx,answers:state.answers,reasons:state.reasons,comments:state.comments,photos:state.photos,foodAgreed:state.foodAgreed,foodDone:state.foodDone,falsification:state.falsification,foodCompletedAt:state.foodCompletedAt}));saveStatus='Сохранено на этом устройстве';}
+    try{localStorage.setItem(STORAGE_KEY,JSON.stringify({version:1,visitStarted:true,visitPbo:state.visitPbo,visitDate:state.visitDate,groupIdx:state.groupIdx,answers:state.answers,reasons:state.reasons,comments:state.comments,photos:state.photos,foodAgreed:state.foodAgreed,foodDone:state.foodDone,processFinished:state.processFinished,falsification:state.falsification,foodCompletedAt:state.foodCompletedAt}));saveStatus='Сохранено на этом устройстве';}
     catch(e){saveStatus='Не удалось сохранить на устройстве. Не закрывайте вкладку.';}
     const el=$('.save-status');if(el)el.textContent=saveStatus;
   }
@@ -938,6 +939,12 @@
       saveStatus='Восстановлен сохранённый визит';
     }
   }catch(e){saveStatus='Не удалось прочитать сохранённый визит';}
+  if(state.visitStarted){
+    if(state.foodDone){
+      TASKS=TASKS.filter(t=>!['form-food','results-food'].includes(t.id));
+      if(!state.processFinished)TASKS.unshift({id:'results-food',name:`Ознакомиться с результатами Аудит по Безопасности пищи New в ПБО ${state.visitPbo} от ${state.visitDate}`,sub:'Формирование результата',author:'Администратор ПКВ',date:state.foodDraftDate,screen:'results-food'});
+    }else upsertFoodFillTask({screen:state.foodAgreed?'form-food':'agreement-food'});
+  }
   document.addEventListener('input',e=>{if(e.target.matches('textarea.comment-box'))persistVisit();});
   document.addEventListener('change',e=>{if(e.target.matches('[data-action="answer-q"],[data-action="reason-check"]')){updateProposalState();persistVisit();}});
   document.addEventListener('click',()=>{if(state.visitStarted)persistVisit();});

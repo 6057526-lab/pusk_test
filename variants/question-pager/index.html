@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>ПУСК — X4 · По одному вопросу</title>
+  <title>ПУСК — X2 · По одному вопросу</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/recording.css" />
@@ -405,13 +405,13 @@
     <section class="screen" data-screen="checklist-meta">
       <header class="app-header back-header">
         <button class="icon-btn" data-action="back-to-modal">‹</button>
-        <div class="header-title trunc">Аудит по Безопасности пищи New</div>
+        <div class="header-title trunc">Параметры чек-листа</div>
       </header>
       <div class="scroll-body meta-list">
         <div class="meta-row"><span class="lbl">Учитывать в цикле</span><span class="val">Да</span></div>
         <div class="meta-row"><span class="lbl">Требуемое количество посещений/год</span><span class="val">1</span></div>
         <div class="meta-row"><span class="lbl">Диагностический чек-лист</span><span class="val">Нет</span></div>
-        <div class="meta-row"><span class="lbl">Проходной минимум</span><span class="val">80</span></div>
+        <div class="meta-row"><span class="lbl">Правило оценки в демо</span><span class="val">Доля ответов «Да»; критический «Нет» — неудовлетворительно</span></div>
         <div class="meta-card">
           <h3>Настройки аналитических панелей</h3>
           <div class="meta-row"><span class="lbl">Название чек-листа в отчётах</span><span class="val">Аудит по Безопасности пищи New</span></div>
@@ -453,7 +453,6 @@
       <header class="app-header back-header">
         <button class="icon-btn" data-go="tasks">‹</button>
         <div class="header-title center">Ознакомьтесь с информацией</div>
-        <button class="icon-btn book">📖</button>
       </header>
       <div class="scroll-body pad agreement-body">
         <div class="white-card">
@@ -466,14 +465,10 @@
           <p>Вы должны использовать эту информацию исключительно в целях прохождения исследования и не использовать ее для каких-либо других целей.</p>
           <p>Вы не имеете права копировать (в цифровой или физической форме) какие-либо элементы этого исследования, за исключением случаев, когда это прямо предусмотрено функциями исследования. В этих случаях после прохождения исследования вы обязаны немедленно удалить информацию, составляющую коммерческую тайну, со всех электронных устройств.</p>
           <p>Вы несете полную ответственность за какое-либо несанкционированное раскрытие информации, составляющей коммерческую тайну и/или ее неправомерное использование. Вы обязаны возместить все убытки причиненные разглашением или неправомерным использованием такой информации, в соответствии с действующим законодательством Российской Федерации.</p>
-        </div><div class="related-blocks"><details open><summary>Напоминания</summary><button class="btn btn-outline-blue" data-action="reminder">+ Напоминание</button></details><details open><summary>Лента</summary><input class="msg-input" placeholder="Сообщение"></details></div>
+        </div>
       </div>
       <footer class="sticky-footer split">
         <button class="btn btn-primary wide" data-action="agree-food">С условиями соглашения ознакомлен и согласен</button>
-        <div class="footer-side">
-          <span class="badge-red">0</span>
-          <button class="icon-btn">⋮</button>
-        </div>
       </footer>
     </section>
 
@@ -505,16 +500,16 @@
     </section>
 
     <section class="screen" data-screen="visit-home"><header class="app-header"><div><small class="eyebrow">ПУСК / ВИЗИТЫ</small><h1>Мой визит</h1></div><button class="icon-btn" data-action="open-menu" aria-label="Меню">☰</button></header><div class="scroll-body pad" id="visit-home-body"></div></section>
-    <section class="screen" data-screen="visit-overview"><header class="app-header"><button class="icon-btn" data-go="visit-home" aria-label="К моему визиту">‹</button><div class="header-title">Разделы визита</div></header><div class="scroll-body pad" id="visit-overview-body"></div><footer class="sticky-footer"><button class="btn btn-primary" data-action="finish-food">Проверить визит</button></footer></section>
+    <section class="screen" data-screen="visit-overview"><header class="app-header"><button class="icon-btn" data-go="form-food" aria-label="Вернуться к заполнению">‹</button><div class="header-title">Разделы визита</div></header><div class="scroll-body pad" id="visit-overview-body"></div><footer class="sticky-footer"><button class="btn btn-primary" data-action="finish-food">Проверить визит</button></footer></section>
     <!-- ===== SCREEN: RESULTS FOOD ===== -->
     <section class="screen" data-screen="results-food">
       <header class="app-header back-header"><button class="icon-btn" data-go="tasks">‹</button><div class="header-title">Ознакомиться с результатами</div><span class="icon-btn book">♧</span></header>
-      <div class="scroll-body pad"><div class="report-label">Файл отчёта</div><button class="text-link report-name" data-action="open-food-document"></button><div class="report-host"></div><div class="report-info">Информация по визиту</div></div>
+      <div class="scroll-body pad"><div id="result-summary"></div><div class="review-card"><h3>Отчёт по визиту</h3><button class="text-link report-name" data-action="open-food-document"></button><button class="btn btn-primary wide" data-action="download-food-report">Скачать PDF</button><p class="pdf-status" role="status"></p></div><details class="report-detail"><summary>Ответы в отчёте</summary><div class="report-host"></div></details></div>
       <footer class="sticky-footer"><button class="btn btn-outline-blue" data-action="finish-process-food">Завершить процесс</button></footer>
     </section>
     <section class="screen" data-screen="pdf-food">
-      <header class="app-header back-header"><button class="icon-btn" data-action="close-food-document">‹</button><div class="header-title trunc report-name"></div><span>⋮</span></header>
-      <div class="scroll-body pad"><div class="report-host"></div><details open class="document-properties"><summary>Свойства документа</summary><dl><dt>Создан</dt><dd>22 сентября 2026 г., 15:15</dd><dt>Изменен</dt><dd>22 сентября 2026 г., 15:15</dd><dt>Размер</dt><dd>30 КБ</dd></dl></details><div class="related-blocks"><details open><summary>Лента</summary><input class="msg-input" placeholder="Сообщение"></details></div></div>
+      <header class="app-header back-header"><button class="icon-btn" data-action="close-food-document" aria-label="Вернуться из отчёта">‹</button><div class="header-title trunc report-name"></div></header>
+      <div class="scroll-body pad"><p class="pdf-preview-note review-muted"></p><button class="btn btn-primary wide" data-action="download-food-report">Скачать PDF</button><p class="pdf-status" role="status"></p><a class="pdf-open-link btn btn-outline-blue wide" target="_blank" rel="noopener" hidden>Открыть PDF отдельно</a><div class="pdf-preview-frame" role="document" aria-label="Отчёт по визиту PDF" hidden></div><details class="report-detail"><summary>Ответы в отчёте</summary><div class="report-host"></div></details></div>
     </section>
 
     <!-- ===== REPORTS HUB ===== -->
@@ -792,23 +787,10 @@
     <div class="menu-overlay" id="menu" hidden>
       <div class="menu-panel">
         <button class="menu-close" data-action="close-menu">×</button>
-        <button class="menu-item active" data-go="dashboard" data-action="close-menu"><span class="mi orange">⌂</span> Главная</button>
-        <button class="menu-group open" data-action="toggle-group">
-          <span class="mi">📁</span> ПУСК <span class="chev">⌃</span>
-        </button>
-        <div class="menu-sub">
-          <button data-go="dashboard" data-action="close-menu">Dashboard ПУСК</button>
-          <button data-go="visit-entry" data-action="close-menu">Внесение визитов</button>
-          <button data-go="reports" data-action="close-menu">Отчеты по визитам</button>
-          <button>Отчеты по ПД</button>
-          <button>Аналитика по визитам</button>
-          <button>Анализ Бизнес-результатов</button>
-        </div>
-        <button class="menu-group" data-action="toggle-group">
-          <span class="mi orange">⚡</span> NABIT <span class="chev">⌄</span>
-        </button>
-        <button class="menu-item" data-go="tasks" data-action="close-menu"><span class="mi">☑</span> Задачи</button>
-        <button class="menu-item"><span class="mi">🔔</span> Лента оповещений</button>
+        <div class="menu-role">КпП</div>
+        <button class="menu-item active" data-go="dashboard" data-action="close-menu"><span class="mi orange" aria-hidden="true">⌂</span> Dashboard ПУСК</button>
+        <button class="menu-item" data-go="visit-entry" data-action="close-menu"><span class="mi" aria-hidden="true">▤</span> Внесение визитов</button>
+        <button class="menu-item" data-go="tasks" data-action="close-menu"><span class="mi" aria-hidden="true">☑</span> Задачи</button>
       </div>
     </div>
 
@@ -819,7 +801,7 @@
     </section>
     <section class="screen" data-screen="access-denied"><header class="app-header back-header"><button class="icon-btn" data-go="report-pbo-search">‹</button><div class="header-title trunc">Доступ к элементу</div></header><div class="scroll-body pad"><h3 style="font-size:14px;text-align:center;margin-top:10px">Доступ к элементу запрещен</h3></div><footer class="sticky-footer"><button class="btn btn-outline-blue" data-go="report-pbo-search">Закрыть</button></footer></section>
     <div class="finish-overlay" id="finish-confirm" hidden role="dialog" aria-modal="true" aria-label="Завершить визит">
-      <div class="finish-sheet"><div class="sheet-handle"></div><p>Укажите наличие факта фальсификации, если он был обнаружен при проведении визита. При наличии фальсификации результат визита будет неудовлетворительным независимо от итогов визита в %. Внимание! После нажатия кнопки "Завершить визит" редактирование визита будет недоступно!</p><fieldset><legend>Факт фальсификации<span class="req">*</span></legend><label><input type="radio" name="falsification" value="Да"><span>Да</span></label><label><input type="radio" name="falsification" value="Нет" checked><span>Нет</span></label></fieldset><p id="falsification-error" class="field-error" hidden>Укажите факт фальсификации.</p><button class="btn btn-outline-red" data-action="confirm-food">Завершить визит</button> <button class="btn btn-outline-blue" data-action="cancel-finish">Отмена</button></div>
+      <div class="finish-sheet"><div class="sheet-handle"></div><p>Укажите наличие факта фальсификации, если он был обнаружен при проведении визита. При наличии фальсификации результат визита будет неудовлетворительным независимо от итогов визита в %. Внимание! После нажатия кнопки "Завершить визит" редактирование визита будет недоступно!</p><fieldset><legend>Факт фальсификации<span class="req">*</span></legend><label><input type="radio" name="falsification" value="Да"><span>Да</span></label><label><input type="radio" name="falsification" value="Нет" checked><span>Нет</span></label></fieldset><p id="falsification-error" class="field-error" hidden>Укажите факт фальсификации.</p><button class="btn btn-outline-blue wide" data-action="open-food-preview">Посмотреть предварительный PDF</button><button class="btn btn-outline-red" data-action="confirm-food">Завершить визит</button> <button class="btn btn-outline-blue" data-action="cancel-finish">Отмена</button></div>
     </div>
 
     <!-- ===== MODAL: FILL INFO ===== -->
@@ -827,17 +809,14 @@
       <div class="modal">
         <header class="modal-header">
           <button class="icon-btn" data-action="close-modal">‹</button>
-          <div class="header-title trunc">Заполнить информацию</div>
+          <div class="header-title">Заполнить информацию по визиту</div>
         </header>
         <div class="modal-body">
           <label class="field-label">Дата визита<span class="req">*</span></label>
-          <div class="input-with-icon date-control"><input type="text" value="22.09.2026" id="visit-date" aria-label="Дата визита" /><button data-action="calendar-open" aria-label="Открыть календарь">▦</button></div>
+          <div class="input-with-icon date-control visit-date-control"><input type="text" value="22.09.2026" id="visit-date" aria-label="Дата визита" inputmode="numeric" /><button data-action="calendar-open" aria-label="Открыть календарь"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4M17 3v4M3 11h18"/></svg></button></div>
           <p id="visit-required" class="field-error" hidden>Заполните дату визита и ПБО.</p><label class="field-label">ПБО<span class="req">*</span></label>
-          <div class="input-with-icon" id="pbo-trigger" data-action="open-pbo-search" role="button" tabindex="0">
-            <input type="text" value="" id="visit-pbo" placeholder="Начните вводить текст для поиска" readonly />
-            <span>🔍</span>
-          </div>
-          <p class="hint">Для выбора недоступны недавно открытые ПБО, а также ПБО, по которым назначен IPUR</p>
+          <input type="hidden" id="visit-pbo" value=""><button type="button" class="visit-pbo-trigger" id="visit-pbo-trigger" data-action="open-visit-pbo-picker" aria-haspopup="dialog" aria-expanded="false"><span><small>Предприятие</small><strong id="visit-pbo-caption">Выберите ПБО</strong></span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+          <p class="hint">Для выбора недоступны ПБО, открытые менее 60 дней, а также находящиеся в процессе IPUR.</p>
           <label class="field-label">Чек-лист</label>
           <a href="#" class="link" id="checklist-link" data-action="open-checklist-meta">Поддерживающие визиты ПУСК</a>
         </div>
@@ -847,13 +826,25 @@
         </footer>
       </div>
     </div>
+    <div class="visit-pbo-overlay" id="visit-pbo-picker" hidden>
+      <section class="visit-pbo-sheet" role="dialog" aria-modal="true" aria-labelledby="visit-pbo-title">
+        <header><div><span class="eyebrow">ВНЕСЕНИЕ ВИЗИТА</span><h2 id="visit-pbo-title">Выберите ПБО</h2></div><button class="icon-btn" type="button" data-action="close-visit-pbo-picker" aria-label="Закрыть выбор ПБО">×</button></header>
+        <div class="visit-pbo-search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg><input type="search" id="visit-pbo-query" aria-label="Номер или название ПБО" placeholder="Номер или название ПБО"></div>
+        <p class="visit-pbo-helper">Доступные предприятия</p><div id="visit-pbo-options" role="listbox" aria-label="Доступные ПБО"></div><p id="visit-pbo-empty" class="empty-state" hidden>Ничего не найдено. Попробуйте другой номер или название.</p>
+      </section>
+    </div>
   </div>
 
   <div class="hint-bar">
-    X4 · По одному вопросу · <a href="../../demo/index.html">DEV</a>
+    X2 · По одному вопросу · <a href="../../demo/index.html">DEV</a>
   </div>
 
   <script src="js/questions.js"></script>
+  <script src="assets/vendor/pdf-lib.min.js"></script>
+  <script src="assets/vendor/fontkit.umd.min.js"></script>
+  <script src="assets/vendor/report-font.js"></script>
+  <script src="assets/vendor/pdfjs.min.js"></script>
+  <script src="js/report-pdf.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

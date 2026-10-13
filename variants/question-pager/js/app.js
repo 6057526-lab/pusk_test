@@ -124,6 +124,7 @@
   ];
 
   TASKS.splice(1, 0, {id:"repeat-people",name:"Провести повторный визит Практики работы с Людьми 2026 в ПБО 3333333 Test Hub",sub:"Регулирование визитов",author:"Администратор ПКВ",date:"22 сентября 2026 г., 12:36",due:"29 сентября 2026 г., 03:00",screen:"results"});
+  TASKS = TASKS.filter(t => t.id !== 'form-food');
 
   const state = {
     visitStarted:false, groupIdx:0,
@@ -143,6 +144,7 @@
     reasons: {},
     comments: {},
     foodDone: false,
+    processFinished: false,
     foodAgreed: false,
     foodDraftDate: "22 сентября 2026 г., 12:36",
     pboVisitChecklist: "Аудит по Безопасности пищи New",
@@ -150,6 +152,37 @@
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+  function renderVisitPboOptions(filter = '') {
+    const query=filter.trim().toLocaleLowerCase('ru');
+    const rows=PBOS.filter(p=>p.name.toLocaleLowerCase('ru').includes(query));
+    $('#visit-pbo-options').innerHTML=rows.map(p=>{
+      const parts=/^(\d+)\s+(.*)$/.exec(p.name),selected=$('#visit-pbo').value===p.name;
+      return `<button type="button" class="visit-pbo-option" role="option" aria-label="${escapeHtml(p.name)}" aria-selected="${selected}" data-action="choose-visit-pbo" data-pbo="${escapeHtml(p.name)}"><span class="pbo-number">${escapeHtml(parts?.[1]||'ПБО')}</span><span class="pbo-option-name">${escapeHtml(parts?.[2]||p.name)}</span><span class="pbo-option-check" aria-hidden="true">${selected?'✓':'›'}</span></button>`;
+    }).join('');
+    $('#visit-pbo-empty').hidden=rows.length>0;
+  }
+  function closeVisitPboPicker() {
+    $('#visit-pbo-picker').hidden=true;$('#modal-fill-info').inert=false;
+    $('#visit-pbo-trigger').setAttribute('aria-expanded','false');$('#visit-pbo-trigger').focus();
+  }
+  $('#visit-pbo-query').addEventListener('input',e=>renderVisitPboOptions(e.target.value));
+  $('#visit-pbo-picker').addEventListener('click',e=>{if(e.target===$('#visit-pbo-picker'))closeVisitPboPicker();});
+  document.addEventListener('keydown',e=>{
+    if($('#visit-pbo-picker').hidden)return;
+    if(e.key==='Escape'){e.preventDefault();closeVisitPboPicker();}
+    if(['ArrowDown','ArrowUp','Home','End'].includes(e.key)&&!e.target.matches('input')){
+      const options=$$('#visit-pbo-options [role="option"]'),index=options.indexOf(document.activeElement);
+      const next=e.key==='Home'?0:e.key==='End'?options.length-1:Math.max(0,Math.min(options.length-1,index+(e.key==='ArrowDown'?1:-1)));
+      if(options[next]){e.preventDefault();options[next].focus();}
+    }
+    if(e.key==='ArrowDown'&&e.target===$('#visit-pbo-query')){const first=$('#visit-pbo-options [role="option"]');if(first){e.preventDefault();first.focus();}}
+    if(e.key==='Tab'){
+      const controls=$$('button,input',$('#visit-pbo-picker'));
+      const first=controls[0],last=controls.at(-1);
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+    }
+  });
 
   function allQuestions() {
     const list = [];
@@ -164,7 +197,8 @@
   }
 
   function go(name) {
-    if(name==='dashboard')name='visit-home';
+    if(state.screen==='form-food'&&name!=='form-food')questionScroll[state.groupIdx]=$('#food-scroll').scrollTop;
+    if(state.screen==='pdf-food'&&name!=='pdf-food')clearDocumentPdf();
     if(name==='visit-home')renderVisitHome();
     if(name==='visit-overview')renderOverview();
     state.screen = name;
@@ -358,10 +392,53 @@
     $('[data-action="question-prev"]').disabled=state.groupIdx===0;
     persistVisit();
   }
+  function visitSummary() {
+    const all = allQuestions();
+    const answered = all.filter(q => state.answers[q.id]);
+    const yes = answered.filter(q => state.answers[q.id] === 'Да').length;
+    const criticalNo = all.filter(q => q.critical && state.answers[q.id] === 'Нет');
+    const sections = FOOD_CATS.flatMap(cat => cat.sections.map(sec => ({
+      name: sec.name, critical: cat.key === 'crit', total: sec.questions.length,
+      answered: sec.questions.filter(q => state.answers[q.id]).length,
+      yes: sec.questions.filter(q => state.answers[q.id] === 'Да').length
+    })));
+    const failed = criticalNo.length > 0 || state.falsification === 'Да';
+    return {total:all.length,answered:answered.length,yes,criticalNo,sections,
+      percent:yes/all.length*100,
+      outcome:failed?'Неудовлетворительный результат':'Удовлетворительный результат',
+      complete:answered.length === all.length};
+  }
+
+  const percentText = n => n.toLocaleString('ru-RU',{maximumFractionDigits:1}) + '%';
+  function visitMetadata() {
+    const match = /^(\d+)\s+(.*)$/.exec(state.visitPbo);
+    const known = state.visitPbo === '3333333 Test Hub';
+    return [
+      ['ПБО №',match?.[1] || 'Не указан'],['ПБО',match?.[2] || state.visitPbo],
+      ['КпП',known?'Рычков тест 2':'Не указан'],
+      ['МпП',known?'рычков тест 6 рычков тест 6':'Не указан'],
+      ['ДпП',known?'рычков тест 7 рычков тест 7':'Не указан'],
+      ['Директор ПБО',known?'рычков тест 3 рычков тест 3':'Не указан'],
+      ['Статус',state.foodDone?'Завершён':'Проверка перед завершением'],['Дата визита',state.visitDate]
+    ];
+  }
+
+  function summaryMarkup(editable = false) {
+    const s = visitSummary();
+    const failures = s.criticalNo.map(q => `<li><strong>${escapeHtml(qLabel(q))}</strong><p>${escapeHtml(q.text)}</p>${editable?`<button class="btn btn-outline-blue" data-action="jump-q" data-qid="${escapeHtml(q.id)}">Перейти к вопросу</button>`:''}</li>`).join('');
+    return `<div class="review-card"><span class="eyebrow">${state.foodDone?'РЕЗУЛЬТАТ ВИЗИТА':'ПРЕДВАРИТЕЛЬНЫЙ РЕЗУЛЬТАТ'}</span><h2>${s.answered} / ${s.total} вопросов отвечено</h2><dl class="visit-metadata">${visitMetadata().map(([k,v])=>`<dt>${escapeHtml(k)}</dt><dd>${escapeHtml(v)}</dd>`).join('')}</dl></div>
+      <div class="review-card"><h3>Общий итог визита</h3><p class="result-outcome ${s.criticalNo.length||state.falsification==='Да'?'is-failed':'is-passed'}">${s.complete?s.outcome:'Оценка доступна после заполнения'}</p><p class="summary-score">${percentText(s.percent)} <span>«Да»: ${s.yes} / ${s.total}</span></p><p class="review-muted">Демонстрационный расчёт: процент — доля «Да» от всех вопросов. «Частично Да» и «Неактуально» не увеличивают процент. Любой критический «Нет» или факт фальсификации даёт неудовлетворительный результат. Бизнес-формула требует согласования.</p>${state.falsification==='Да'?'<p class="is-failed">Обнаружен факт фальсификации</p>':''}</div>
+      <div class="review-card"><h3>Критические вопросы с 0 баллов («Нет»)</h3>${failures?`<p>${s.criticalNo.length} вопросов</p><ul class="critical-failures">${failures}</ul>`:'<p>Нет критических ответов «Нет»</p>'}</div>
+      <div class="review-card"><h3>Итоги по разделам</h3><div class="section-results">${s.sections.map(sec=>`<div><span>${escapeHtml(sec.name)}</span><strong>${percentText(sec.yes/sec.total*100)}</strong><small>«Да»: ${sec.yes} / ${sec.total}</small></div>`).join('')}</div></div>`;
+  }
+
   function renderReview() {
     const all=allQuestions();
     const counts=all.reduce((acc,q)=>{const a=state.answers[q.id];acc[a]=(acc[a]||0)+1;return acc;},{});
-    $('#review-food-body').innerHTML=`<div class="review-card"><h2>Все ${all.length} вопросов заполнены</h2><p>${escapeHtml(state.visitPbo)}</p><p>${escapeHtml(state.visitDate)}</p><p class="review-muted">Проверьте ответы перед окончательным завершением визита.</p></div><div class="review-card"><h3>Ответы</h3>${Object.entries(counts).map(([a,n])=>`<p>${escapeHtml(a)} — ${n}</p>`).join('')}<p class="review-muted">Проверьте отмеченные нарушения перед завершением визита.</p></div>${FOOD_CATS.map((c,i)=>`<div class="review-card"><h3>${escapeHtml(c.label)}</h3><p>${all.filter(q=>q.catIdx===i).length} вопросов заполнено</p><button class="btn btn-outline-blue" data-action="review-edit" data-index="${i}">Проверить ответы</button></div>`).join('')}<p class="review-muted">На следующем шаге укажите факт фальсификации и подтвердите завершение. После подтверждения ответы будут недоступны для редактирования.</p>`;
+    $('#review-food-body').innerHTML=summaryMarkup(true)+`<div class="review-card"><h3>Ответы</h3>${Object.entries(counts).map(([a,n])=>`<p>${escapeHtml(a)} — ${n}</p>`).join('')}</div>${FOOD_CATS.map((c,i)=>`<div class="review-card"><h3>${escapeHtml(c.label)}</h3><p>${all.filter(q=>q.catIdx===i).length} вопросов заполнено</p><button class="btn btn-outline-blue" data-action="review-edit" data-index="${i}">Проверить ответы</button></div>`).join('')}<p class="review-muted">На следующем шаге укажите факт фальсификации и подтвердите завершение. После подтверждения ответы будут недоступны для редактирования.</p>`;
+    $('#review-food-body').insertAdjacentHTML('afterbegin','<div class="review-card"><h3>Отчёт перед завершением</h3><p class="review-muted">Посмотрите ответы и комментарии. Пока визит не завершён, их можно изменить.</p><button class="btn btn-outline-blue wide" data-action="open-food-preview">Посмотреть предварительный PDF</button></div>');
+    const answers=FOOD_CATS.map(cat=>`<details class="review-answer-group"><summary>${escapeHtml(cat.label)}</summary>${cat.sections.map(sec=>`<h4>${escapeHtml(sec.name)}</h4>${sec.questions.map(q=>`<div class="review-answer"><strong>${escapeHtml(qLabel(q))} · ${escapeHtml(state.answers[q.id]||'Без ответа')}</strong><p>${escapeHtml(q.text)}</p>${state.answers[q.id]==='Нет'&&(state.reasons[q.id]||[]).length?`<p>Причины: ${escapeHtml(state.reasons[q.id].join('; '))}</p>`:''}${state.comments[q.id]?`<p>Комментарий: ${escapeHtml(state.comments[q.id])}</p>`:''}<button class="text-link" data-action="jump-q" data-qid="${escapeHtml(q.id)}">Изменить ответ</button></div>`).join('')}`).join('')}</details>`).join('');
+    $('#review-food-body').insertAdjacentHTML('beforeend',`<details class="review-card review-all-answers"><summary>Все ответы и комментарии</summary>${answers}</details>`);
   }
 
   function whySelectHtml(q, showWhy) {
@@ -566,7 +643,7 @@
     state.foodCompletedAt = new Date().toISOString();
     $('#finish-confirm').hidden = true;
     TASKS = TASKS.filter(t => t.id !== 'form-food');
-    persistVisit();go('visit-home');
+    persistVisit();go('tasks');
     setTimeout(() => {
       TASKS.unshift({id:'results-food',name:`Ознакомиться с результатами Аудит по Безопасности пищи New в ПБО ${state.visitPbo} от ${state.visitDate}`,sub:'Формирование результата',author:'Администратор ПКВ',date:state.foodDraftDate,screen:'results-food'});
       if (state.screen === 'tasks') renderTasks();
@@ -576,7 +653,9 @@
 
   function startFoodVisit() {
     const pbo = $('#visit-pbo').value.trim(), date = $('#visit-date').value.trim();
-    if (!pbo || !/^\d{2}\.\d{2}\.\d{4}$/.test(date)) {
+    const parts = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(date);
+    const parsed = parts && new Date(Number(parts[3]),Number(parts[2])-1,Number(parts[1]));
+    if (!PBOS.some(p => p.name === pbo) || !parts || parsed.getDate() !== Number(parts[1]) || parsed.getMonth() !== Number(parts[2])-1 || parsed.getFullYear() !== Number(parts[3])) {
       $('#visit-required').hidden = false;
       return;
     }
@@ -589,7 +668,8 @@
     $('#visit-required').hidden = true;
     if (state.foodDone || state.visitPbo !== pbo || state.visitDate !== date) {
       state.answers = {}; state.reasons = {}; state.comments = {}; state.photos = {};
-      state.foodAgreed = false; state.foodDone = false; state.falsification = null;
+      state.foodAgreed = false; state.foodDone = false; state.processFinished = false; state.falsification = null;
+      $('input[name="falsification"][value="Нет"]').checked=true;
       state.foodCatIdx = 0;state.groupIdx=0;
       $("#food-form-body").innerHTML = "";
       validationAttempted=false;lastMissingId=null;
@@ -598,13 +678,86 @@
     }
     state.visitPbo = pbo; state.visitDate = date;
     upsertFoodFillTask({screen:state.foodAgreed ? 'form-food' : 'agreement-food',sub:'Прохождение чек-листа'});
-    state.visitStarted=true;persistVisit();closeModal();go(state.foodAgreed?'visit-overview':'agreement-food');
+    state.visitStarted=true;persistVisit();closeModal();go(state.foodAgreed?'form-food':'agreement-food');
+  }
+
+  function reportData() {
+    snapshotFoodFormDom();
+    const summary=visitSummary();
+    const questions=FOOD_CATS.flatMap(cat=>cat.sections.flatMap(sec=>sec.questions.map(q=>({
+      ...q,section:sec.name,answer:state.answers[q.id]||'Без ответа',
+      reasons:state.answers[q.id]==='Нет'?(state.reasons[q.id]||[]):[],comment:state.comments[q.id]||'',photo:state.photos[q.id]
+    }))));
+    return {preliminary:!state.foodDone,summary,metadata:visitMetadata(),falsification:state.falsification||'Нет',percent:percentText(summary.percent),sections:summary.sections.map(s=>({...s,percent:percentText(s.yes/s.total*100)})),questions};
+  }
+  const reportFilename=()=>`${state.foodDone?'ПУСК':'Предварительный ПУСК'} — ПБО ${state.visitPbo} — ${state.visitDate}.pdf`;
+  let documentPdfUrl=null,documentRenderToken=0,documentPdfTask=null;
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc=new URL('assets/vendor/pdfjs.worker.min.js',document.baseURI).href;
+  function clearDocumentPdf() {
+    documentRenderToken++;
+    const frame=$('.pdf-preview-frame');frame.hidden=true;frame.replaceChildren();
+    if(documentPdfTask){documentPdfTask.destroy().catch(()=>{});documentPdfTask=null;}
+    const link=$('.pdf-open-link');link.hidden=true;link.removeAttribute('href');
+    if(documentPdfUrl){URL.revokeObjectURL(documentPdfUrl);documentPdfUrl=null;}
+  }
+  async function prepareDocumentPdf() {
+    clearDocumentPdf();const token=documentRenderToken;
+    const frame=$('.pdf-preview-frame');frame.hidden=false;
+    // Keep a usable page size if the demo shell hides this variant while PDF creation is pending.
+    const width=Math.max(320,frame.clientWidth-2),density=Math.min(devicePixelRatio||1,2);
+    const status=$('[data-screen="pdf-food"] .pdf-status');status.textContent='Подготовка PDF…';
+    $('.pdf-preview-note').textContent=state.foodDone?'Отчёт завершённого визита.':'Предварительный отчёт. Визит ещё не завершён — ответы можно исправить.';
+    try {
+      const bytes=await window.PuskReportPdf.create(reportData());
+      if(token!==documentRenderToken||state.screen!=='pdf-food')return;
+      documentPdfUrl=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
+      const link=$('.pdf-open-link');link.href=documentPdfUrl;link.hidden=false;
+      documentPdfTask=window.pdfjsLib.getDocument({data:new Uint8Array(bytes),isEvalSupported:false});
+      const pdf=await documentPdfTask.promise;
+      for(let pageNumber=1;pageNumber<=pdf.numPages;pageNumber++){
+        if(token!==documentRenderToken)return;
+        const page=await pdf.getPage(pageNumber);
+        if(token!==documentRenderToken)return;
+        const base=page.getViewport({scale:1});
+        const viewport=page.getViewport({scale:width/base.width*density});
+        const canvas=document.createElement('canvas');canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
+        canvas.style.width='100%';canvas.style.height='auto';canvas.setAttribute('aria-label',`Страница ${pageNumber} из ${pdf.numPages}`);
+        const sheet=document.createElement('div');sheet.className='pdf-canvas-page';
+        const label=document.createElement('p');label.textContent=`Страница ${pageNumber} / ${pdf.numPages}`;
+        sheet.append(canvas,label);frame.append(sheet);
+        await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
+      }
+      if(token!==documentRenderToken)return;
+      status.textContent='';
+    } catch(error){if(token===documentRenderToken){status.textContent='Не удалось открыть PDF. Попробуйте ещё раз.';console.error('X4 PDF preview:',error);}}
+  }
+  function openFoodDocument(fromConfirmation=false) {
+    state.documentReturn=state.screen;
+    state.returnToConfirmation=fromConfirmation;
+    if(fromConfirmation){state.falsification=$('input[name="falsification"]:checked')?.value||'Нет';$('#finish-confirm').hidden=true;renderReview();persistVisit();}
+    go('pdf-food');prepareDocumentPdf();
+  }
+  async function downloadFoodReport(button) {
+    if(!state.foodAgreed||unanswered().length)return;
+    const status=button.closest('.screen').querySelector('.pdf-status');
+    button.disabled=true;status.textContent='Подготовка PDF…';
+    try {
+      const bytes=await window.PuskReportPdf.create(reportData());
+      const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
+      const link=document.createElement('a');link.href=url;link.download=reportFilename();
+      document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+      status.textContent='PDF готов к скачиванию';
+    } catch(error) {
+      status.textContent='Не удалось создать PDF. Попробуйте скачать ещё раз.';
+      console.error('X4 PDF export:',error);
+    } finally {button.disabled=false;}
   }
 
   function renderReport() {
+    $('#result-summary').innerHTML = summaryMarkup();
     const rows = [];
     FOOD_CATS.forEach(cat => cat.sections.forEach(sec => sec.questions.forEach(q => rows.push({...q,section:sec.name}))));
-    const filename = `Отчет по визиту в ПБО ${state.visitPbo} от ${state.visitDate}.pdf`;
+    const filename = reportFilename();
     const pages = [];
     for (let i=0; i<5; i++) {
       let last = '';
@@ -614,7 +767,7 @@
         last = q.section;
         return `${heading}<tr><td>${escapeHtml(q.label)}</td><td>${escapeHtml(q.text)}</td><td class="${state.answers[q.id] === 'Нет' ? 'bad' : ''}">${escapeHtml(state.answers[q.id] || '—')}</td><td>${escapeHtml(state.answers[q.id] === 'Нет' ? (state.reasons[q.id] || []).join('; ') : '')}${state.comments[q.id] ? `<br>${escapeHtml(state.comments[q.id])}` : ''}</td></tr>`;
       }).join('');
-      const meta = i === 0 ? `<h4>Замечания</h4><div class="report-band">Аудит по Безопасности пищи New</div><div class="report-band">Полный отчет</div><table><tr><td>Дата визита</td><td>${escapeHtml(state.visitDate)}</td></tr><tr><td>ПБО</td><td>${escapeHtml(state.visitPbo)}</td></tr><tr><td>Факт фальсификации</td><td>${escapeHtml(state.falsification || 'Нет')}</td></tr></table>` : '';
+      const meta = i === 0 ? `<h4>Результат визита</h4><div class="report-band">Аудит по Безопасности пищи New</div><div class="report-band">${escapeHtml(visitSummary().outcome)} · ${percentText(visitSummary().percent)}</div><table>${visitMetadata().map(([k,v])=>`<tr><td>${escapeHtml(k)}</td><td>${escapeHtml(v)}</td></tr>`).join('')}<tr><td>Факт фальсификации</td><td>${escapeHtml(state.falsification || 'Нет')}</td></tr></table><p>Демонстрационный расчёт — доля «Да»; критический «Нет» или фальсификация — неудовлетворительно.</p>` : '';
       pages.push(`<article class="report-sheet" data-page="${i+1}">${meta}<table><thead><tr><th>№</th><th>Показатель</th><th>Ответ</th><th>Комментарий / причины</th></tr></thead><tbody>${content}</tbody></table><footer>${i+1} / 5</footer></article>`);
     }
     const viewer = () => `<div class="report-viewer"><div class="report-pages">${pages.join('')}</div><div class="report-controls"><span>Страница: <b class="report-page-number">1</b> / 5</span><div><button data-action="report-zoom-out" aria-label="Уменьшить">−</button><button data-action="report-zoom-in" aria-label="Увеличить">⌕</button><button data-action="report-reset" aria-label="Сбросить масштаб">⟳</button></div></div></div>`;
@@ -642,13 +795,22 @@
   }
 
   function extraAction(action,t) {
+    if(action==='open-visit-pbo-picker'){
+      $('#visit-pbo-query').value='';renderVisitPboOptions();$('#visit-pbo-picker').hidden=false;$('#modal-fill-info').inert=true;
+      $('#visit-pbo-trigger').setAttribute('aria-expanded','true');$('#visit-pbo-query').focus();
+    }
+    if(action==='close-visit-pbo-picker')closeVisitPboPicker();
+    if(action==='choose-visit-pbo'){
+      $('#visit-pbo').value=t.dataset.pbo;$('#visit-pbo-caption').textContent=t.dataset.pbo;closeVisitPboPicker();
+    }
     if(action==='workspace-new'){state.checklist='Аудит по Безопасности пищи New';$('#checklist-link').textContent=state.checklist;go('visit-entry');openModal();}
     if(action==='workspace-continue')go(state.foodDone?'results-food':state.foodAgreed?'form-food':'agreement-food');
     if(action==='open-group'){state.groupIdx=Number(t.dataset.index);go('form-food');persistVisit();}
     if(action==='group-next')moveQuestion(1);
     if(action==='question-prev')moveQuestion(-1);
     if(action==='workspace-missing'){const q=unanswered()[0];if(q)jumpToQuestion(q.id);}
-    if(action==='workspace-reset'){if(window.confirm('Удалить черновик X3 и начать заново?')){state.visitStarted=false;localStorage.removeItem(STORAGE_KEY);location.reload();}}
+    if(action==='workspace-reset'){if(window.confirm('Удалить черновик X4 и начать заново?')){state.visitStarted=false;localStorage.removeItem(STORAGE_KEY);location.reload();}}
+    if(action==='download-food-report') downloadFoodReport(t);
 
     if (action === 'calendar-open') openCalendar();
     if (action === 'calendar-prev' || action === 'calendar-next') {
@@ -663,11 +825,13 @@
     if (action === 'confirm-food') confirmFoodAudit();
     if (action === 'cancel-finish') $('#finish-confirm').hidden=true;
     if (action === 'agree-food') {
-      markFoodAgreed();persistVisit();go('visit-overview');
+      markFoodAgreed();persistVisit();go('form-food');
     }
-    if (action === 'open-food-document') {state.documentReturn=state.screen;go('pdf-food');}
-    if (action === 'close-food-document') go(state.documentReturn || 'results-food');
-    if (action === 'finish-process-food') { go('visit-home'); return; 
+    if (action === 'open-food-preview') openFoodDocument(!$('#finish-confirm').hidden);
+    if (action === 'open-food-document') openFoodDocument();
+    if (action === 'close-food-document') {go(state.documentReturn || 'results-food');if(state.returnToConfirmation){state.returnToConfirmation=false;$('#finish-confirm').hidden=false;}}
+    if (action === 'finish-process-food') {
+      state.processFinished=true;persistVisit();
       TASKS=TASKS.filter(x=>x.id!=='results-food');go('tasks');showToast('Процесс завершен');setTimeout(hideToast,1600);
     }
     if (action === 'clear-report-filter') {state.reportFilter='';$('#report-filter-chip').hidden=true;renderReportsPboList();}
@@ -866,6 +1030,7 @@
 
   document.addEventListener("change", (e) => {
     const t = e.target;
+    if(t.matches('input[name="falsification"]')&&!state.foodDone){state.falsification=t.value;persistVisit();if(state.screen==='review-food')renderReview();}
     if(t.dataset.action === 'reason-check') {
       const checks = [...t.closest('.why-checks').querySelectorAll('input:checked')];
       state.reasons[t.dataset.qid] = checks.map(x=>x.value);
@@ -919,10 +1084,10 @@
   function groups(){
     return FOOD_CATS.flatMap((c,catIdx)=>c.sections.flatMap((sec,sectionIdx)=>sec.questions.map((q,i)=>({catIdx,sectionIdx,name:sec.name,questions:[q],sectionIndex:i,sectionTotal:sec.questions.length}))));
   }
-  function moveQuestion(delta){
+  function moveQuestion(delta,reviewWhenComplete=true){
     questionScroll[state.groupIdx]=$('#food-scroll').scrollTop;
     snapshotFoodFormDom();
-    if(delta>0&&(!unanswered().length||state.groupIdx===groups().length-1)){finishFoodAudit();return;}
+    if(reviewWhenComplete&&delta>0&&(!unanswered().length||state.groupIdx===groups().length-1)){finishFoodAudit();return;}
     const index=Math.max(0,Math.min(groups().length-1,state.groupIdx+delta));
     if(index===state.groupIdx)return;
     state.groupIdx=index;go('form-food');persistVisit();
@@ -931,7 +1096,7 @@
   function persistVisit(){
     if(!state.visitStarted)return;
     snapshotFoodFormDom();
-    try{localStorage.setItem(STORAGE_KEY,JSON.stringify({version:1,visitStarted:true,visitPbo:state.visitPbo,visitDate:state.visitDate,groupIdx:state.groupIdx,answers:state.answers,reasons:state.reasons,comments:state.comments,photos:state.photos,foodAgreed:state.foodAgreed,foodDone:state.foodDone,falsification:state.falsification,foodCompletedAt:state.foodCompletedAt}));saveStatus='Сохранено на этом устройстве';}
+    try{localStorage.setItem(STORAGE_KEY,JSON.stringify({version:1,visitStarted:true,visitPbo:state.visitPbo,visitDate:state.visitDate,groupIdx:state.groupIdx,answers:state.answers,reasons:state.reasons,comments:state.comments,photos:state.photos,foodAgreed:state.foodAgreed,foodDone:state.foodDone,processFinished:state.processFinished,falsification:state.falsification,foodCompletedAt:state.foodCompletedAt}));saveStatus='Сохранено на этом устройстве';}
     catch(e){saveStatus='Не удалось сохранить на устройстве. Не закрывайте вкладку.';}
     const el=$('.save-status');if(el)el.textContent=saveStatus;
   }
@@ -947,18 +1112,24 @@
       return `<details class="toc-category" ${ci===state.foodCatIdx?'open':''}><summary><strong>${escapeHtml(cat.label)}</strong><span>${done}/${qs.length}</span></summary>${cat.sections.map((sec,si)=>`<details class="toc-section"><summary>${escapeHtml(sec.name)}<small>${sec.questions.filter(q=>state.answers[q.id]).length}/${sec.questions.length}</small></summary>${sec.questions.map(q=>`<button class="toc-question" data-action="open-group" data-index="${pages.findIndex(g=>g.questions[0].id===q.id)}"><span class="toc-code">${escapeHtml(q.label)}</span><span>${escapeHtml(q.text)}</span><strong>${escapeHtml(state.answers[q.id]||'Без ответа')}</strong></button>`).join('')}</details>`).join('')}</details>`;
     }).join('');
   }
-  // Touch gestures supplement buttons. Ignore controls and browser-edge gestures.
+  // Touch, pen and mouse gestures supplement buttons; fields keep their own gestures.
   let gesture=null;
   const swipeArea=$('#food-scroll');
   swipeArea.addEventListener('pointerdown',e=>{
-    if(e.pointerType!=='touch'||e.target.closest('button,input,textarea,label,select,summary,a')||e.clientX<24||e.clientX>innerWidth-24)return;
+    if(!['touch','pen','mouse'].includes(e.pointerType)||e.isPrimary===false||(e.pointerType==='mouse'&&e.button!==0)||e.target.closest('button,input,textarea,label,select,summary,a')||(e.pointerType==='touch'&&(e.clientX<24||e.clientX>innerWidth-24)))return;
     gesture={id:e.pointerId,x:e.clientX,y:e.clientY,time:Date.now()};
+    try{swipeArea.setPointerCapture(e.pointerId);}catch{}
   });
-  swipeArea.addEventListener('pointercancel',()=>{gesture=null;});
+  swipeArea.addEventListener('pointermove',e=>{
+    if(!gesture||e.pointerId!==gesture.id)return;
+    const dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;
+    if(Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.7){e.preventDefault();swipeArea.classList.add('is-swiping');}
+  });
+  swipeArea.addEventListener('pointercancel',()=>{gesture=null;swipeArea.classList.remove('is-swiping');});
   swipeArea.addEventListener('pointerup',e=>{
-    const g=gesture;gesture=null;if(!g||e.pointerId!==g.id)return;
+    const g=gesture;gesture=null;swipeArea.classList.remove('is-swiping');if(!g||e.pointerId!==g.id)return;
     const dx=e.clientX-g.x,dy=e.clientY-g.y;
-    if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.7&&Date.now()-g.time<900)moveQuestion(dx<0?1:-1);
+    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.7&&Date.now()-g.time<1400)moveQuestion(dx<0?1:-1,false);
   });
   try{
     const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
@@ -967,8 +1138,15 @@
       // Only accept answers that still belong to this questionnaire.
       state.answers=Object.fromEntries(allQuestions().filter(q=>q.options.includes(saved.answers?.[q.id])).map(q=>[q.id,saved.answers[q.id]]));
       saveStatus='Восстановлен сохранённый визит';
+      const falsification=$(`input[name="falsification"][value="${state.falsification==='Да'?'Да':'Нет'}"]`);falsification.checked=true;
     }
   }catch(e){saveStatus='Не удалось прочитать сохранённый визит';}
+  if(state.visitStarted){
+    if(state.foodDone){
+      TASKS=TASKS.filter(t=>!['form-food','results-food'].includes(t.id));
+      if(!state.processFinished)TASKS.unshift({id:'results-food',name:`Ознакомиться с результатами Аудит по Безопасности пищи New в ПБО ${state.visitPbo} от ${state.visitDate}`,sub:'Формирование результата',author:'Администратор ПКВ',date:state.foodDraftDate,screen:'results-food'});
+    }else upsertFoodFillTask({screen:state.foodAgreed?'form-food':'agreement-food'});
+  }
   document.addEventListener('input',e=>{if(e.target.matches('textarea.comment-box'))persistVisit();});
   document.addEventListener('change',e=>{if(e.target.matches('[data-action="answer-q"],[data-action="reason-check"]')){updateProposalState();persistVisit();}});
   document.addEventListener('click',()=>{if(state.visitStarted)persistVisit();});

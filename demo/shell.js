@@ -2,10 +2,8 @@
 (()=>{
  const variants=[
   {id:'baseline',label:'X1 · Исходник',url:'../prototype/index.html'},
-  {id:'current-mobile',label:'Текущая мобильная',url:'../variants/current-mobile/index.html'},
-  {id:'product-proposal',label:'X2 · Для продакта',url:'../variants/product-proposal/index.html'},
-  {id:'visit-workspace',label:'X3 · Удобное внесение',url:'../variants/visit-workspace/index.html',storage:'pusk:visit-workspace:v1'},
-  {id:'question-pager',label:'X4 · По одному вопросу',url:'../variants/question-pager/index.html',storage:'pusk:question-pager:v1'}
+  {id:'question-pager',label:'X2 · По одному вопросу',url:'../variants/question-pager/index.html',storage:'pusk:question-pager:v1'},
+  {id:'enterprise-audit',label:'X3 · Моё предприятие',url:'../variants/enterprise-audit/index.html',storage:'pusk:enterprise-audit:v1'}
  ];
  const frames=new Map();let active;
  function select(id){

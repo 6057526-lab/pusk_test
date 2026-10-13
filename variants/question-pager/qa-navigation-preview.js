@@ -1,0 +1,38 @@
+async(page)=>{
+ const assert=(ok,msg)=>{if(!ok)throw Error(msg)},errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('http://127.0.0.1:8767/variants/question-pager/index.html');
+ await page.evaluate(()=>{const qs=window.PUSK_QUESTIONS.flatMap(c=>c.sections.flatMap(s=>s.questions));localStorage.setItem('pusk:question-pager:v1',JSON.stringify({version:1,visitStarted:true,foodAgreed:true,foodDone:false,visitPbo:'3333333 Test Hub',visitDate:'22.09.2026',groupIdx:4,answers:Object.fromEntries(qs.map(q=>[q.id,'Да'])),comments:{'14.FS':'Комментарий перед завершением'},reasons:{},photos:{}}));});
+ await page.reload();await page.setViewportSize({width:390,height:780});
+ await page.getByRole('button',{name:'Меню',exact:true}).click();await page.getByRole('button',{name:'Задачи',exact:true}).click();await page.locator('button[data-task="form-food"]').click();await page.locator('[data-screen="form-food"].active').waitFor();
+ await page.getByRole('button',{name:'Все разделы',exact:true}).click();
+ await page.getByRole('button',{name:'Вернуться к заполнению',exact:true}).click();
+ assert(await page.locator('.audit-green').getAttribute('data-qid')==='14.FS','Назад из оглавления возвращает к тому же вопросу');
+ const box=await page.locator('.q-text').boundingBox();
+ await page.mouse.move(box.x+box.width*.8,box.y+15);await page.mouse.down();await page.mouse.move(box.x+box.width*.2,box.y+17,{steps:8});await page.mouse.up();
+ assert(await page.locator('.audit-green').getAttribute('data-qid')==='15.FS','Реальное перетаскивание мышью меняет вопрос');
+ await page.locator('[data-action="question-prev"]').click();
+ if(!await page.locator('.comment-details').evaluate(el=>el.open))await page.locator('.comment-details summary').click();await page.locator('#food-form-body .comment-box').fill('Комментарий перед завершением');
+ const input=await page.locator('#food-form-body .comment-box').boundingBox();await page.mouse.move(input.x+input.width*.8,input.y+15);await page.mouse.down();await page.mouse.move(input.x+input.width*.2,input.y+16,{steps:8});await page.mouse.up();
+ assert(await page.locator('.audit-green').getAttribute('data-qid')==='14.FS','Перетаскивание в комментарии не листает');
+ await page.locator('[data-action="group-next"]').click();await page.locator('[data-screen="review-food"].active').waitFor();
+ await page.getByRole('button',{name:'Посмотреть предварительный PDF',exact:true}).click();
+ await page.locator('[data-screen="pdf-food"].active .pdf-preview-frame').waitFor();
+ await page.locator('[data-screen="pdf-food"] .pdf-open-link[href^="blob:"]').waitFor();
+ await page.waitForFunction(()=>{const canvas=document.querySelector('.pdf-preview-frame canvas');if(!canvas)return false;const bytes=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;return bytes.some((n,i)=>i%4!==3&&n>0&&n<210);});
+ await page.screenshot({path:'output/playwright/x4-preliminary-viewer.png'});
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('pusk:question-pager:v1')));
+ assert(saved.foodDone===false,'Просмотр PDF не завершает визит');
+ const pending=page.waitForEvent('download');await page.locator('[data-screen="pdf-food"] [data-action="download-food-report"]').click();const dl=await pending;await dl.saveAs('output/playwright/x4-preliminary-report.pdf');
+ assert(dl.suggestedFilename().includes('Предварительный'),'Файл обозначен как предварительный');
+ await page.locator('[data-action="close-food-document"]').click();await page.locator('[data-screen="review-food"].active').waitFor();
+ await page.locator('[data-action="review-edit"]').first().click();await page.getByRole('radio',{name:'Нет',exact:true}).check();await page.locator('[data-action="group-next"]').click();
+ await page.locator('[data-action="review-confirm"]').click();
+ await page.locator('#finish-confirm').getByRole('radio',{name:'Да',exact:true}).check();
+ await page.locator('#finish-confirm [data-action="open-food-preview"]').click();await page.locator('[data-screen="pdf-food"] .pdf-open-link[href^="blob:"]').waitFor();
+ const changed=page.waitForEvent('download');await page.locator('[data-screen="pdf-food"] [data-action="download-food-report"]').click();await (await changed).saveAs('output/playwright/x4-preliminary-updated.pdf');
+ await page.locator('[data-action="close-food-document"]').click();assert(await page.locator('#finish-confirm').isVisible(),'Из PDF возвращаемся к подтверждению');
+ assert(await page.locator('#finish-confirm').getByRole('radio',{name:'Да',exact:true}).isChecked(),'Выбранная фальсификация не теряется');
+ assert(!errors.length,errors.join(';'));
+ return {status:'PASS',checks:['TOC back to current question','real mouse swipe','input exclusion','preliminary PDF before lock','return to edits','fresh PDF after edits','confirmation preview and return']};
+}
