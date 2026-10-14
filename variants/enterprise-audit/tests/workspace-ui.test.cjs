@@ -1,0 +1,4 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const D=require('../js/workspace-domain.js');const U=require('../js/workspace-ui.js');
+function setup(){const state={workspace:D.createWorkspace({sites:[{id:'29779',name:'Озёрная'},{id:'26511',name:'Лакинск'}]}),visits:[],pbo:'29779',view:'dashboard'};return U.create({getState:()=>state,repository:{},bridge:{}});}
+test('home prioritizes pending decisions and portfolio shows independent plan state',()=>{const u=setup();assert.match(u.render('dashboard'),/Согласовать план действий/);assert.match(u.render('portfolio'),/Озёрная/);assert.match(u.render('portfolio'),/Исполнение/);});
+test('plan exposes submitted version and actions, not verification control for KpP',()=>{const u=setup();const html=u.render('plan',{id:'plan-29779'});assert.match(html,/Согласовать план/);assert.match(html,/Директор ПБО/);assert.doesNotMatch(html,/data-work="verify_action"/);});

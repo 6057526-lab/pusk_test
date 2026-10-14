@@ -1,0 +1,4 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const S=require('../js/visit-scope.js');
+const all=[{id:'a',critical:false},{id:'b',critical:false},{id:'c',critical:true}],sections=[{name:'one',questions:all.slice(0,2)},{name:'critical',critical:true,questions:all.slice(2)}];
+test('partial progress and failure ignore excluded critical answer',()=>{const s=S.summary(all,sections,{questionIds:['a','b'],answers:{a:'Да',b:'Нет',c:'Нет'},falsification:'Нет'});assert.equal(s.total,2);assert.equal(s.percent,50);assert.equal(s.complete,true);assert.equal(s.criticalNo.length,0);assert.equal(s.sections.length,1);});
+test('invalid assignment questions cannot silently become a full or empty audit',()=>{assert.throws(()=>S.questions(all,{questionIds:['unknown']}));assert.throws(()=>S.questions(all,{questionIds:[]}));assert.throws(()=>S.questions(all,{questionIds:['a','a']}));});

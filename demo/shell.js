@@ -3,7 +3,7 @@
  const variants=[
   {id:'baseline',label:'X1 · Исходник',url:'../prototype/index.html'},
   {id:'question-pager',label:'X2 · По одному вопросу',url:'../variants/question-pager/index.html',storage:'pusk:question-pager:v1'},
-  {id:'enterprise-audit',label:'X3 · Моё предприятие',url:'../variants/enterprise-audit/index.html',storage:'pusk:enterprise-audit:v1'}
+  {id:'enterprise-audit',label:'X3 · Работа КпП',url:'../variants/enterprise-audit/index.html?v=20261014-checklists',storage:'pusk:enterprise-audit:v1'}
  ];
  const frames=new Map();let active;
  function select(id){

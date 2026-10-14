@@ -1,0 +1,3 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const {app,KEY}=require('./helpers/app-harness.cjs');
+test('broken JSON remains untouched and a recovery screen is shown',()=>{const storage=new Map([[KEY,'{broken']]);const h=app({workspace:true,storage});assert.equal(storage.get(KEY),'{broken');assert.match(h.screen(),/Сохранённые данные X3 требуют проверки/);});
+test('unknown workspace schema never overwrites old answers',()=>{const raw=JSON.stringify({version:1,visits:[],workspace:{version:99}}),storage=new Map([[KEY,raw]]);const h=app({workspace:true,storage});assert.equal(storage.get(KEY),raw);assert.match(h.screen(),/Сохранённые данные X3 требуют проверки/);});

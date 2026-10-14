@@ -1,0 +1,2 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const {app}=require('./helpers/app-harness.cjs');const tick=()=>new Promise(r=>setImmediate(r));
+test('pause from assigned audit returns to original assignment context',async()=>{const h=app({workspace:true});h.work('assignment','assignment-repeat');await tick();h.work('start-assignment','assignment-repeat');await tick();h.click('pause');assert.equal(h.state().view,'assignment');assert.equal(h.state().workUI.id,'assignment-repeat');});

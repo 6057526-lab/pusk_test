@@ -1,0 +1,8 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');const vm=require('node:vm');const D=require('../js/workspace-domain.js');
+test('plan PDF preserves old version dates after director resubmits',async()=>{
+ const ctx={window:{PDFLib:require('../assets/vendor/pdf-lib.min.js'),fontkit:require('../assets/vendor/fontkit.umd.min.js')}};for(const file of ['assets/vendor/report-font.js','js/report-pdf.js'])new Function('window',fs.readFileSync(path.join(__dirname,'..',file),'utf8'))(ctx.window);
+ const w=D.createWorkspace({sites:[{id:'26051',name:'Батайск Парк'}]});const next=D.applyCommand(w,{id:'send',type:'demo_resubmit',entityId:'plan-26051',expectedRevision:0,payload:{due:'2026-11-25'}}).workspace;
+ const old=next.planVersions[0],current=next.planVersions.at(-1),plan=next.plans[0],site=next.sites[0];const pdfjs=require('../assets/vendor/pdfjs.min.js');pdfjs.GlobalWorkerOptions.workerSrc=path.join(__dirname,'../assets/vendor/pdfjs.worker.min.js');
+ async function text(version){const bytes=await ctx.window.PuskReportPdf.createPlan({plan,version,site});const pdf=await pdfjs.getDocument({data:bytes,disableFontFace:true}).promise;let result='';for(let p=1;p<=pdf.numPages;p++)result+=(await (await pdf.getPage(p)).getTextContent()).items.map(i=>i.str).join(' ');await pdf.destroy();return result;}
+ const oldText=await text(old),newText=await text(current);assert.match(oldText,/2026-10-20/);assert.doesNotMatch(oldText,/2026-11-25/);assert.match(newText,/2026-11-25/);assert.match(oldText,/Версия 1/);assert.match(newText,/Версия 2/);
+});

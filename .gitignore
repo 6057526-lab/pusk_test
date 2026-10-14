@@ -11,6 +11,7 @@ Thumbs.db
 .env.*
 
 # Heavy reference materials (not needed for clickable demo)
+/reference/
 *.mp4
 frames/
 hi/
