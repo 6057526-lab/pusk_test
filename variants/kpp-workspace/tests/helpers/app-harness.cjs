@@ -1,5 +1,5 @@
 const fs=require('node:fs');const path=require('node:path');const vm=require('node:vm');
-const KEY='pusk:enterprise-audit:v1';
+const KEY='pusk:kpp-workspace:v1';
 const js=name=>fs.readFileSync(path.join(__dirname,'..','..','js',name),'utf8');
 
 // Run the real application and its event handlers. The DOM is deliberately small:

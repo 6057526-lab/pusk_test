@@ -80,22 +80,5 @@ window.PuskReportPdf = (() => {
     pages.forEach((p,i)=>p.drawText('ПУСК · '+(i+1)+' / '+pages.length,{x:44,y:28,size:9,font,color:green}));
     return doc.save();
   }
-  async function createPlan({plan,version,site}){
-    const {PDFDocument,rgb}=window.PDFLib,doc=await PDFDocument.create();doc.registerFontkit(window.fontkit);
-    const font=await doc.embedFont(Uint8Array.from(atob(window.PUSK_REPORT_FONT),c=>c.charCodeAt(0)),{subset:true});
-    doc.setTitle('ПУСК — план действий — версия '+version.number);let page,y;
-    function newPage(){page=doc.addPage([595.28,841.89]);y=790;}newPage();
-    function line(value,size=11){let current='';for(const word of String(value).split(/\s+/).flatMap(word=>{const pieces=[];let piece='';for(const ch of word){if(font.widthOfTextAtSize(piece+ch,size)>500){pieces.push(piece);piece=ch;}else piece+=ch;}if(piece)pieces.push(piece);return pieces;})){const next=current?current+' '+word:word;if(font.widthOfTextAtSize(next,size)>500&&current){draw(current,size);current=word;}else current=next;}if(current)draw(current,size);y-=10;}
-    function draw(value,size){if(y<65)newPage();page.drawText(value,{x:44,y,size,font,color:rgb(.12,.23,.17)});y-=size*1.6;}
-    line('ПУСК · План действий',20);line('Демонстрационный документ для согласования интерфейса',10);
-    line('ПБО '+site.id+' · '+site.name,14);line('Версия '+version.number+' · передана '+version.submittedAt);
-    line('Автор: '+plan.author);line('Решение: '+({approved:'Согласован',returned:'На доработке'}[version.decision]||'На согласовании'));
-    if(version.comment)line('Комментарий к решению: '+version.comment);
-    line('Состав зафиксированной версии',15);
-    let lastGroup='';for(const [i,a] of version.items.entries()){const groupId=a.planTaskId||version.groupMap?.[a.id];if(groupId&&groupId!==lastGroup){const task=version.tasks?.find(t=>t.id===groupId);if(task)line('Задача плана: '+task.title,14);lastGroup=groupId;}line((i+1)+'. '+a.title,12);line('Ответственный: '+a.assignee);line('Срок: '+a.due);if(a.sourceQuestionId)line('Связанный вопрос исходного аудита: '+a.sourceQuestionId);}
-    line('Согласование плана не подтверждает исполнение действий. Состояние исполнения смотрите отдельно в рабочем пространстве.',10);
-    doc.getPages().forEach((p,i)=>p.drawText('ПУСК · ПД · '+(i+1)+' / '+doc.getPages().length,{x:44,y:28,size:9,font}));
-    return doc.save();
-  }
-  return {create,createPlan};
+  return {create};
 })();

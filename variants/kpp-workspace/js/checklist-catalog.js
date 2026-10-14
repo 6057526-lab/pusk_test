@@ -1,4 +1,4 @@
-/* X3 demonstration catalogue. Local IDs are not production checklist/version IDs.
+/* X4 demonstration catalogue. Local IDs are not production checklist/version IDs.
  * Names: source prototype CHECKLIST_OPTIONS and imported project description §4.1.
  * Only food-safety has a supplied questionnaire; preparations are not visits.
  */

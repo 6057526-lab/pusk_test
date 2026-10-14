@@ -1,4 +1,4 @@
-/* Dashboard data belongs to X3; no plan or remediation status is inferred. */
+/* Dashboard data belongs to X4; no plan or remediation status is inferred. */
 (function(root){
   'use strict';
   const newest=(a,b)=>b.date.localeCompare(a.date)||(b.completedAt||'').localeCompare(a.completedAt||'');

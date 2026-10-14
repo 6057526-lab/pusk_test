@@ -4,37 +4,35 @@ const fs=require('node:fs');
 const path=require('node:path');
 const vm=require('node:vm');
 
-const {app,KEY}=require('./helpers/app-harness.cjs');
+const KEY='pusk:enterprise-audit:v1';
+const js=name=>fs.readFileSync(path.join(__dirname,'..','js',name),'utf8');
 
-test('dashboard search and scroll survive opening a result and restarting',()=>{
-  const harness=app({visit:{done:true,falsification:'Нет'}});
-  harness.click('nav',{view:'dashboard'});
-  harness.input({id:'dashboard-query',value:'Озёрная'});
-  harness.scrollDashboard(640);
-  harness.click('dashboard-visit',{id:'user-draft'});
-  assert.equal(harness.state().view,'result');assert.equal(harness.state().dashboardReturn,true);
-  harness.click('dashboard-return');
-  assert.equal(harness.state().view,'dashboard');assert.equal(harness.state().dashboardReturn,false);
-  assert.equal(harness.state().dashboard.query,'Озёрная');assert.equal(harness.state().dashboard.scroll,640);
-  const restarted=app({storage:harness.storage});
-  assert.equal(restarted.state().dashboard.query,'Озёрная');assert.equal(restarted.state().dashboard.scroll,640);
-});
-
-test('dashboard opens the existing draft without changing answers or neighbors',()=>{
-  const storage=new Map([['pusk:question-pager:v1','neighbor']]);
-  const harness=app({storage,visit:{done:false,falsification:'Нет'}}),before=harness.state().visits[0].answers;
-  harness.click('nav',{view:'dashboard'});harness.click('dashboard-visit',{id:'user-draft'});
-  assert.equal(harness.state().view,'form');assert.deepEqual(harness.state().visits[0].answers,before);
-  assert.equal(storage.get('pusk:question-pager:v1'),'neighbor');
-});
-
-test('dashboard completed-result drill-down excludes the uncounted example',()=>{
-  const harness=app();harness.click('dashboard-results');
-  assert.equal(harness.state().view,'visits');
-  // Inspect the actual renderer without requiring browser storage mutation.
-  assert.equal(harness.screen().includes('Демонстрационный пример'),false);
-  assert.equal(harness.screen().includes('По выбранным условиям визитов нет'),true);
-});
+// Run the real application and its event handlers. The DOM is deliberately small:
+// these checks cover persistence/lifecycle and report data, not layout or PDF rendering.
+function app({storage=new Map(),visit}={}){
+  const events=new Map(),windowEvents=new Map(),elements=new Map(),timers=new Map(),reports=[];
+  let timerId=0,reloads=0;
+  const on=(events,name,listener)=>events.set(name,[...(events.get(name)||[]),listener]);
+  const emit=(events,name,event={})=>{for(const listener of events.get(name)||[])listener(event);};
+  const element=()=>({hidden:true,dataset:{},classList:{toggle(){}},replaceChildren(){},focus(){},querySelectorAll(){return [];},innerHTML:'',clientWidth:390});
+  const document={baseURI:'http://localhost/',hidden:false,fonts:{ready:Promise.resolve()},querySelector(selector){if(!elements.has(selector))elements.set(selector,element());return elements.get(selector);},querySelectorAll(){return [];},addEventListener:(name,listener)=>on(events,name,listener)};
+  const ctx={console,Date,URL,Blob,Uint8Array,devicePixelRatio:1,document,crypto:{randomUUID:()=> 'new-visit'},MutationObserver:class{observe(){}},confirm:()=>true,fetch:()=>new Promise(()=>{}),requestAnimationFrame:fn=>fn(),setTimeout(fn){timers.set(++timerId,fn);return timerId;},clearTimeout:id=>timers.delete(id),localStorage:{getItem:key=>storage.get(key)??null,setItem:(key,value)=>storage.set(key,value),removeItem:key=>storage.delete(key)}};
+  ctx.window=ctx;
+  ctx.addEventListener=(name,listener)=>on(windowEvents,name,listener);
+  ctx.pdfjsLib={GlobalWorkerOptions:{}};
+  ctx.PuskReportPdf={create(data){reports.push(data);return new Promise(()=>{});}};
+  ctx.PuskVisitUX=require('../js/visit-ux.js');
+  ctx.location={reload(){reloads++;emit(windowEvents,'pagehide');document.hidden=true;emit(events,'visibilitychange');}};
+  vm.createContext(ctx);
+  vm.runInContext(js('questions.js'),ctx);
+  if(visit){
+    const questions=ctx.PUSK_QUESTIONS.flatMap(c=>c.sections.flatMap(s=>s.questions));
+    const v={id:'user-draft',pbo:'29779',date:'2026-10-12',agreed:true,done:false,section:0,answers:Object.fromEntries(questions.map(q=>[q.id,'Да'])),reasons:{},comments:{},photos:{},...visit};
+    storage.set(KEY,JSON.stringify({version:1,pbo:v.pbo,date:v.date,view:v.done?'result':'review',active:v.id,visits:[v]}));
+  }
+  vm.runInContext(js('app.js'),ctx);
+  return {storage,reports,get reloads(){return reloads;},state:()=>JSON.parse(storage.get(KEY)),click(action,extra={}){emit(events,'click',{target:{closest:()=>({dataset:{action,...extra}})}});},input(target){emit(events,'input',{target});},change(target){emit(events,'change',{target});},pagehide:()=>emit(windowEvents,'pagehide'),hidden(){document.hidden=true;emit(events,'visibilitychange');},pendingScrollSave(){emit(events,'scroll',{target:{id:'form-scroll'}});},flushTimers(){const pending=[...timers.values()];timers.clear();pending.forEach(fn=>fn());}};
+}
 
 test('app reset cannot recreate deleted drafts during reload or delayed saves',()=>{
   const storage=new Map([['pusk:question-pager:v1','neighbor-draft']]);
