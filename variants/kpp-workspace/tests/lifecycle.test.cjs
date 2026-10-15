@@ -28,12 +28,13 @@ test('dashboard opens the existing draft without changing answers or neighbors',
   assert.equal(storage.get('pusk:question-pager:v1'),'neighbor');
 });
 
-test('dashboard completed-result drill-down excludes the uncounted example',()=>{
+test('retired completed-result action only opens unfinished visits without deleting records',()=>{
   const harness=app();harness.click('dashboard-results');
   assert.equal(harness.state().view,'visits');
-  // Inspect the actual renderer without requiring browser storage mutation.
+  assert.equal(harness.state().visits.some(v=>v.done),true);
   assert.equal(harness.screen().includes('Демонстрационный пример'),false);
-  assert.equal(harness.screen().includes('По выбранным условиям визитов нет'),true);
+  assert.doesNotMatch(harness.screen(),/data-tab="done"|История визитов/);
+  assert.equal(harness.screen().includes('Незавершённых визитов нет'),true);
 });
 
 test('app reset cannot recreate deleted drafts during reload or delayed saves',()=>{
@@ -73,18 +74,18 @@ test('unconfirmed legacy default is absent from preliminary PDF report data',()=
   harness.click('download-pdf');
   assert.equal(harness.reports.length,1);
   assert.equal(harness.reports[0].preliminary,true);
-  assert.equal(harness.reports[0].falsification,'Не выбран');
+  assert.equal(harness.reports[0].falsification,undefined);
   assert.equal(harness.state().visits[0].falsification,'Нет');
 });
 
-test('explicit falsification choice and completed legacy results stay in reports',()=>{
+test('food reports omit legacy falsification while preserving stored historic data',()=>{
   const harness=app({visit:{falsification:'Нет'}});
   harness.change({dataset:{},name:'falsification',value:'Да'});
   harness.click('download-pdf');
-  assert.equal(harness.reports[0].falsification,'Да');
-  assert.equal(harness.state().visits[0].falsificationConfirmed,true);
+  assert.equal(harness.reports[0].falsification,undefined);
+  assert.notEqual(harness.state().visits[0].falsificationConfirmed,true);
   const completed=app({visit:{done:true,falsification:'Нет'}});
   completed.click('download-pdf');
   assert.equal(completed.reports[0].preliminary,false);
-  assert.equal(completed.reports[0].falsification,'Нет');
+  assert.equal(completed.reports[0].falsification,undefined);
 });

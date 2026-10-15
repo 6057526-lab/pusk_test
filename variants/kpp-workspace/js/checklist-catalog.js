@@ -7,7 +7,7 @@
   const DEFAULT_ID='food-safety';
   const items=[
     {id:DEFAULT_ID,name:'Аудит безопасности пищи',sourceName:'Аудит по Безопасности пищи New',description:'Проверка безопасности пищи',ready:true,questionCount:48},
-    {id:'people-practices',name:'Практики работы с людьми',sourceName:'Практики работы с Людьми 2026',description:'Отдельный визит по практикам работы с людьми',ready:false},
+    {id:'people-practices',name:'Практика работы с людьми',sourceName:'Практики работы с Людьми 2026',description:'Пять вопросов из прототипа основного проекта',ready:true,questionCount:5,demo:true,requiresFalsification:true},
     {id:'high-level',name:'Управление предприятием на высоком уровне',sourceName:'Визит по Управлению Предприятиями на Высоком Уровне',description:'Комплексная проверка предприятия · ВпУПнВУ',ready:false},
     {id:'business-planning',name:'Бизнес-планирование',sourceName:'Бизнес-планирование',description:'Отдельный визит в начале цикла',ready:false,note:'В рабочей системе доступность зависит от даты открытия ПБО. Эти данные пока не подключены.'},
     {id:'supporting',name:'Поддерживающие визиты ПУСК',sourceName:'Поддерживающие визиты ПУСК',description:'Поддерживающий визит вне назначенного этапа ИПУР',ready:false,note:'Назначенные повторные и ИПУР-проверки открываются из задач со своим составом вопросов.'}
@@ -17,7 +17,7 @@
   const visitName=v=>get(identity(v))?.name||v.checklistName||'Неизвестный чек-лист';
   function search(query=''){
     const needle=query.trim().toLocaleLowerCase('ru');
-    return items.filter(c=>(c.name+' '+c.sourceName+' '+c.description).toLocaleLowerCase('ru').includes(needle));
+    return items.filter(c=>[DEFAULT_ID,'people-practices'].includes(c.id)).filter(c=>(c.name+' '+c.sourceName+' '+c.description).toLocaleLowerCase('ru').includes(needle));
   }
   function findDraft(visits,{pbo,date,checklistId}){
     return visits.find(v=>!v.done&&!v.example&&!v.assignmentId&&v.pbo===pbo&&v.date===date&&identity(v)===checklistId);

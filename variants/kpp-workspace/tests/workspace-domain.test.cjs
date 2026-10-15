@@ -3,6 +3,13 @@ const assert=require('node:assert/strict');
 const D=require('../js/workspace-domain.js');
 const fixture=()=>D.createWorkspace({sites:[{id:'29779',name:'Озёрная'},{id:'26511',name:'Лакинск'},{id:'26051',name:'Батайск Парк'}],today:'2026-10-13'});
 const command=(w,type,entityId,payload={},id='c1')=>D.applyCommand(w,{id,type,entityId,expectedRevision:w.plans.find(p=>p.id===entityId)?.revision??w.assignments.find(p=>p.id===entityId)?.revision??0,payload},{actor:'kpp-demo',now:'2026-10-13T12:00:00Z'});
+
+test('people results never replace the latest food audit in food comparisons',()=>{
+ const food={id:'food',pbo:'29779',date:'2026-10-12',done:true,answers:{q:'Нет'}};
+ const people={id:'people',pbo:'29779',date:'2026-10-13',done:true,checklistId:'people-practices',answers:{p_q1:'Да'}};
+ const r=D.analyzeVisits([food,people],[{questions:[{id:'q'}]}]);
+ assert.deepEqual(r.records.map(v=>v.id),['food']);assert.equal(r.latest[0].id,'food');assert.equal(r.issues[0].id,'q');
+});
 test('migration adds workflow without resetting existing workspace or custom data',()=>{const w=fixture();w.custom='keep';assert.equal(D.migrateWorkspace(w,{sites:[],today:'2026-10-13'}).custom,'keep');assert.equal(D.migrateWorkspace(w,{}).plans.length,3);});
 test('approval completes only approval task and never verifies actions',()=>{const w=fixture(),r=command(w,'approve_plan','plan-29779');assert.equal(r.workspace.plans[0].status,'approved');assert.equal(r.workspace.tasks.find(t=>t.planId==='plan-29779'&&t.type==='approval').status,'completed');assert.equal(r.workspace.actions[0].status,'open');assert.equal(w.plans[0].status,'submitted');});
 test('return requires explanation and preserves returned version across resubmission',()=>{let w=fixture();assert.throws(()=>command(w,'return_plan','plan-29779'),e=>e.code==='validation');w=command(w,'return_plan','plan-29779',{comment:'Уточнить срок'}).workspace;w=command(w,'demo_resubmit','plan-29779',{},'c2').workspace;assert.equal(w.planVersions.filter(v=>v.planId==='plan-29779').length,2);assert.equal(w.planVersions.find(v=>v.id==='version-29779-1').decision,'returned');assert.equal(w.plans[0].status,'submitted');});

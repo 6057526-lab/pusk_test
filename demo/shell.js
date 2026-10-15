@@ -4,7 +4,7 @@
   {id:'baseline',label:'X1 · Исходник',url:'../prototype/index.html'},
   {id:'question-pager',label:'X2 · По одному вопросу',url:'../variants/question-pager/index.html',storage:'pusk:question-pager:v1'},
   {id:'enterprise-audit',label:'X3 · Моё предприятие',url:'../variants/enterprise-audit/index.html?v=20261014-x3-restored',storage:'pusk:enterprise-audit:v1'},
-  {id:'kpp-workspace',label:'X4 · Работа КпП',url:'../variants/kpp-workspace/index.html?v=20261014-x4',storage:'pusk:kpp-workspace:v1'}
+  {id:'kpp-workspace',label:'X4 · Работа КпП',url:'../variants/kpp-workspace/index.html?v=20261015-scroll-default',storage:'pusk:kpp-workspace:v1'}
  ];
  const frames=new Map();let active;
  function select(id){

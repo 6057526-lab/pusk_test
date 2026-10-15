@@ -88,7 +88,7 @@
  }
  function analyzeVisits(visits,sections,{siteId='',from='',to=''}={}){
   const questions=sections.flatMap(s=>s.questions),ids=new Set(questions.map(q=>q.id));
-  const records=visits.filter(v=>v.done&&!v.example&&(!siteId||v.pbo===siteId)&&(!from||v.date>=from)&&(!to||v.date<=to));
+  const records=visits.filter(v=>(!v.checklistId||v.checklistId==='food-safety')&&v.done&&!v.example&&(!siteId||v.pbo===siteId)&&(!from||v.date>=from)&&(!to||v.date<=to));
   const full=records.filter(v=>!v.questionIds||v.questionIds.length===ids.size&&v.questionIds.every(id=>ids.has(id)));
   const sorted=full.slice().sort((a,b)=>b.date.localeCompare(a.date)||(b.completedAt||'').localeCompare(a.completedAt||''));
   const seen=new Set(),latest=sorted.filter(v=>!seen.has(v.pbo)&&seen.add(v.pbo));

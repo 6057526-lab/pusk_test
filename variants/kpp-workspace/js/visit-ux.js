@@ -10,7 +10,7 @@
     const card=cards.find(c=>c.bottom>top+8)||cards.at(-1);
     return card?{questionId:card.id,offset:card.top-top,section,scope}:null;
   }
-  const canFinish=(v,complete)=>!!(v&&v.agreed&&!v.done&&complete&&v.falsificationConfirmed&&['Да','Нет'].includes(v.falsification));
+  const canFinish=(v,complete)=>!!(v&&v.agreed&&!v.done&&complete&&(v.checklistId!=='people-practices'||v.falsificationConfirmed&&['Да','Нет'].includes(v.falsification)));
   const api={drafts,filterVisits,captureCursor,canFinish};
   if(typeof module==='object'&&module.exports)module.exports=api;else root.PuskVisitUX=api;
 })(typeof window==='object'?window:globalThis);

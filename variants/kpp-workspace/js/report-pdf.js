@@ -6,9 +6,9 @@ window.PuskReportPdf = (() => {
     doc.registerFontkit(window.fontkit);
     const fontBytes = Uint8Array.from(atob(window.PUSK_REPORT_FONT),c=>c.charCodeAt(0));
     const font = await doc.embedFont(fontBytes,{subset:true});
-    doc.setTitle(data.preliminary?'ПУСК — предварительный отчёт':'ПУСК — отчёт по визиту');doc.setSubject('Демонстрационный аудит безопасности пищи');
+    doc.setTitle(data.preliminary?'ПУСК — предварительный отчёт':'ПУСК — отчёт по визиту');doc.setSubject('Демонстрационный визит · '+(data.checklistName||'Аудит безопасности пищи'));
     let page,y;
-    const ink = rgb(.12,.2,.15),green = rgb(.16,.34,.23);
+    const ink = rgb(.12,.2,.15),green = rgb(.16,.34,.23),red = rgb(.65,.15,.10),amber = rgb(.45,.29,.07);
     const newPage = () => {page=doc.addPage([595.28,841.89]);y=798;};
     newPage();
     function lines(value,size,width=507) {
@@ -38,18 +38,17 @@ window.PuskReportPdf = (() => {
       y-=5;
     }
     function heading(value) {if(y<96)newPage();text(value,13,green);}
-    text('ПУСК · Аудит безопасности пищи',18,green);
+    text('ПУСК · '+(data.checklistName||'Аудит безопасности пищи'),18,green);
     text(data.preliminary?'Предварительный отчёт по визиту':'Отчёт по визиту',14,green);
     if(data.preliminary)text('Визит ещё не завершён. Ответы и комментарии можно изменить.',10);
     for(const [key,value] of data.metadata)text(key+': '+value);
-    text('Факт фальсификации: '+data.falsification);
+    if(data.falsification!==undefined)text('Факт фальсификации: '+data.falsification);
     heading('Общий итог визита');
     text(data.summary.outcome,13);
     text('Отвечено: '+data.summary.answered+' / '+data.summary.total);
-    text('Доля «Да»: '+data.percent+' · '+data.summary.yes+' / '+data.summary.total);
-    text('Демонстрационный расчёт: процент — доля «Да» от всех вопросов. «Частично Да» и «Неактуально» не увеличивают процент. Критический «Нет» или фальсификация — неудовлетворительный результат. Бизнес-формула требует согласования.',9);
+    text('Результат: '+data.percent);
     heading('Итоги по разделам');
-    for(const section of data.sections)text(section.name+': '+section.percent+' («Да»: '+section.yes+' / '+section.total+')');
+    for(const section of data.sections)text(section.name+': '+section.percent);
     heading('Критические вопросы с 0 баллов («Нет»)');
     if(!data.summary.criticalNo.length)text('Нет критических ответов «Нет»');
     for(const q of data.summary.criticalNo)text(q.label+' — '+q.text);
@@ -58,10 +57,12 @@ window.PuskReportPdf = (() => {
     for(const q of data.questions) {
       if(q.section!==lastSection){heading(q.section);lastSection=q.section;}
       if(y<100)newPage();
+      if(q.critical)text('КРИТИЧЕСКИЙ ВОПРОС',10,q.answer==='Нет'?red:amber);
       text(q.label+' · '+q.text,10);
       text('Ответ: '+q.answer,10,green);
       if(q.reasons.length)text('Причины: '+q.reasons.join('; '),9);
       if(q.comment)text('Комментарий: '+q.comment,9);
+      if(q.demoPhoto)text('Демо-фото добавлено. Это пример вложения; реальный файл не прикреплён.',9);
       if(q.photo) {
         try {
           // Detect the actual bytes: a chooser may attach a JPEG with a .png filename.
